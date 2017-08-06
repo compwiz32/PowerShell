@@ -1,51 +1,51 @@
 Function Get-LocalGroup
 {
 <# 
-.SYNOPSIS 
-This function lists the members of a local group
+    .SYNOPSIS 
+    This function lists the members of a local group
 
-.DESCRIPTION 
-This function lists the members of a local group. By default it queries the local administrators group. 
-You can specify the name of the local group (i.e. Remote Desktop users") and you can also run the query against
-mulitple computers at one time.If no computer is specified then it will query the local computer.
+    .DESCRIPTION 
+    This function lists the members of a local group. By default it queries the local administrators group. 
+    You can specify the name of the local group (i.e. Remote Desktop users") and you can also run the query against
+    mulitple computers at one time.If no computer is specified then it will query the local computer.
 
-.EXAMPLE 
-Get-LocalGroup -Group "remote desktop users" -Computername Server01
+    .EXAMPLE 
+    Get-LocalGroup -Group "remote desktop users" -Computername Server01
 
-.EXAMPLE 
-Get-LocalGroup -Group "administrators" -Computername Srvwin0979 | select-object -expandproperty members
+    .EXAMPLE 
+    Get-LocalGroup -Group "administrators" -Computername Srvwin0979 | select-object -expandproperty members
 
-This command will get the members of the local admins group and diplay the full list (not truncated).
+    This command will get the members of the local admins group and diplay the full list (not truncated).
 
-.EXAMPLE 
-Get-LocalGroup -Group "remote desktop users" -Computername $sessions
-
-
-
-Group: remote desktop users
-Computername : CHI-FP01
-Members: 
-
-Group: remote desktop users
-Computername : CHI-WIN8-01
-Members: 
-
-Computername : CHI-EX01
-Members: 
-Group: remote desktop users
-
-Group: remote desktop users
-Computername : CHI-DC01
-Members: jfrost
+    .EXAMPLE 
+    Get-LocalGroup -Group "remote desktop users" -Computername $sessions
 
 
-.NOTES 
-NAME: Get-LocalGroup
-AUTHOR: Mike Kanakos
-CREATED: 2016-06-22
 
-Based 100% on script by Jeffrey Hicks found at:
-https://powershell.org/get-local-admin-group-members-in-a-new-old-way-3/
+    Group: remote desktop users
+    Computername : CHI-FP01
+    Members: 
+
+    Group: remote desktop users
+    Computername : CHI-WIN8-01
+    Members: 
+
+    Computername : CHI-EX01
+    Members: 
+    Group: remote desktop users
+
+    Group: remote desktop users
+    Computername : CHI-DC01
+    Members: jfrost
+
+
+    .NOTES 
+    NAME: Get-LocalGroup
+    AUTHOR: Mike Kanakos
+    CREATED: 2016-06-22
+
+    Based 100% on script by Jeffrey Hicks found at:
+    https://powershell.org/get-local-admin-group-members-in-a-new-old-way-3/
 #>
 
 [cmdletbinding()]
