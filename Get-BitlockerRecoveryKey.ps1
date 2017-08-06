@@ -5,9 +5,10 @@ Function Get-BitlockerRecoveryKey
   Gets Bitlocker Recovery info stored in Active Directory.
   
   .Description 
-  This function retreives the Bitlocker Recovery information stored in Active Directory. You must be a 
-  Domain Administrator or have the permissions delegated to your account in order to retreive
-  the information from A/D. BitLocker info will only exist if a PC is encrypted with BitLocker.
+  This function retrieves the Bitlocker Recovery information stored in Active Directory.
+  You must be a Domain Administrator or have the permissions delegated to your account in 
+  order to retrieve the information from A/D.
+  *** BitLocker info will only exist if a PC is encrypted with BitLocker ***
 
   .Example 
   Get-BitLockerRecoveryKey -computername  CRDNAB-183TXW1
