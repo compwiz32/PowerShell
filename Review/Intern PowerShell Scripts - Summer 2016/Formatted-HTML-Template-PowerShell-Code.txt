@@ -1,0 +1,58 @@
+﻿<# 
+  .Synopsis 
+  Useful for the formatting of an HTML table
+
+  .Description 
+  Will search for only Cary users in the Active Directory and filter the information to only show their name and the
+  seven associated phone numbers. It formats the information in a more aesthetically pleasing way when viewing the HTML
+  file. The most important part of this script is the preformatting on the HTML table because it can be copied and pasted
+  into the heading of any file. It can all be customized, but format is a good start.
+  This script was written as a template for formatting HTML tables.
+
+  .Example 
+  FormattedHTMLTemplate
+  The output is irrelevant for this script, just use the format and syntax for exporting HTML tables.
+
+#>
+
+#Using Active Directory
+Import-Module ActiveDirectory
+
+#Change the format of the HTML file
+$a = "<style>"
+
+#Put in Table format
+$a = $a + "TABLE{border-width: 1px;border-style: solid;border-color: black;border-collapse: collapse;}"
+
+#Table header
+$a = $a + "TH{border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:palegoldenrod}"
+
+#Table Cells
+$a = $a + "TD{border-width: 1px;padding: 3px;border-style: solid;border-color: black;}"
+
+#End formatting
+$a = $a + "</style>"
+
+#Retrieve all of the fields associated with each user in Cary
+$Result = Get-ADUser -SearchBase "OU=Users,OU=Cary,OU=North_America,DC=LORD,DC=LOCAL" -filter * -Properties * | 
+
+#Only select the name and 7 phone numbers that typically work (not saved as arrays)
+Select-Object name, fax, homephone, mobile, mobilephone, officephone, telephonenumber |
+
+#Sort alphabetically by name 
+sort-object -Property name
+
+#Let user choose file path
+Write-Host "Input file path to save output file.  Example: " -nonewline
+Write-host "c:\temp\serverList.htm" -foregroundcolor Magenta
+Write-Host "Please save file with .htm file extension" -ForegroundColor Green
+Write-Host ">>" -NoNewline
+$FilePath = Read-Host 
+
+#Export to HTML file with specific head and body statements
+$CompInfo | Sort-Object -Property name | ConvertTo-HTML -head $a -Body "<H1><center>Cary Users - Names and Phone Numbers</center></H1>" | Out-File $FilePath
+
+#Runs command on local computer
+Invoke-Expression $FilePath
+
+#End
