@@ -1,0 +1,1 @@
+﻿Get-ADDomainController | Format-Table Name, Domain, Site, Ipv4Address, OperatingSystem -AutoSize

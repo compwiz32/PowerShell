@@ -1,0 +1,1 @@
+﻿Get-ItemProperty -path HKCU:"Software\Microsoft\Windows\CurrentVersion\Internet Settings" -name autoconfigurl
