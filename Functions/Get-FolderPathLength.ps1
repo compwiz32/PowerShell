@@ -9,33 +9,62 @@ Function Get-FolderPathLength {
 
   .Example
     Get-FolderPathLength c:\Intel
-    Counts the folder length of the folder C:\Intel and returns the character count and the complete file path + file name.
+    Counts the folder length of the folder C:\fonts and all files one level below and returns the complete file path + file name
+    and the character count of the path for each file or folder.
 
-    PS: C:\> psGet-FolderLength c:\Intel
-    24 C:\intel\ExtremeGraphics
-    11 C:\intel\gp
-    13 C:\intel\Logs
-    28 C:\intel\ExtremeGraphics\CUI
-    37 C:\intel\ExtremeGraphics\CUI\Resource
-    27 C:\intel\Logs\IntelCPHS.log
-    26 C:\intel\Logs\IntelGFX.log
-    30 C:\intel\Logs\IntelGFXCoin.log
+   PS C:\> Get-FolderPathLength 'C:\Users\michael_kanakos\OneDrive - LORD Corporation\Fonts\'
+
+    PS C:\> Get-FolderPathLength C:\Fonts
+
+    FullName             Characters
+    --------             ----------
+    C:\Fonts\dejavu-sans         20
+    C:\Fonts\roboto              15
+
+
 
 
   .Example
     Get-FolderPathLength c:\Intel -recurse
-    Counts the folder length of the folder C:\scripts and sub-directories and returns a list of the character counts and the
-    complete file path + file name for each sub-directory.
+    Counts the folder length of the folder C:\fonts and all sub-folers and files. It then returns the complete file path + file name
+    and the character count of the path for each file or folder.
 
-    PS: C:\> Get-FolderPathLength c:Iintel -recurse
-    24 C:\Intel\ExtremeGraphics
-    11 C:\Intel\gp
-    13 C:\Intel\Logs
-    28 C:\Intel\ExtremeGraphics\CUI
-    37 C:\Intel\ExtremeGraphics\CUI\Resource
-    27 C:\Intel\Logs\IntelCPHS.log
-    26 C:\Intel\Logs\IntelGFX.log
-    30 C:\Intel\Logs\IntelGFXCoin.log
+    PS C:\Scripts\Git-Repo\powershell> Get-FolderPathLength C:\Fonts\ -recurse
+
+    FullName                                                 Characters
+    --------                                                 ----------
+    C:\Fonts\dejavu-sans                                             20
+    C:\Fonts\roboto                                                  15
+    C:\Fonts\dejavu-sans\DejaVu Fonts License.txt                    45
+    C:\Fonts\dejavu-sans\DejaVuSans-Bold.ttf                         40
+    C:\Fonts\dejavu-sans\DejaVuSans-BoldOblique.ttf                  47
+    C:\Fonts\dejavu-sans\DejaVuSans-ExtraLight.ttf                   46
+    C:\Fonts\dejavu-sans\DejaVuSans-Oblique.ttf                      43
+    C:\Fonts\dejavu-sans\DejaVuSans.ttf                              35
+    C:\Fonts\dejavu-sans\DejaVuSansCondensed-Bold.ttf                49
+    C:\Fonts\dejavu-sans\DejaVuSansCondensed-BoldOblique.ttf         56
+    C:\Fonts\dejavu-sans\DejaVuSansCondensed-Oblique.ttf             52
+    C:\Fonts\dejavu-sans\DejaVuSansCondensed.ttf                     44
+    C:\Fonts\roboto\Apache License.txt                               34
+    C:\Fonts\roboto\Roboto-Black.ttf                                 32
+    C:\Fonts\roboto\Roboto-BlackItalic.ttf                           38
+    C:\Fonts\roboto\Roboto-Bold.ttf                                  31
+    C:\Fonts\roboto\Roboto-BoldItalic.ttf                            37
+    C:\Fonts\roboto\Roboto-Italic.ttf                                33
+    C:\Fonts\roboto\Roboto-Light.ttf                                 32
+    C:\Fonts\roboto\Roboto-LightItalic.ttf                           38
+    C:\Fonts\roboto\Roboto-Medium.ttf                                33
+    C:\Fonts\roboto\Roboto-MediumItalic.ttf                          39
+    C:\Fonts\roboto\Roboto-Regular.ttf                               34
+    C:\Fonts\roboto\Roboto-Thin.ttf                                  31
+    C:\Fonts\roboto\Roboto-ThinItalic.ttf                            37
+    C:\Fonts\roboto\RobotoCondensed-Bold.ttf                         40
+    C:\Fonts\roboto\RobotoCondensed-BoldItalic.ttf                   46
+    C:\Fonts\roboto\RobotoCondensed-Italic.ttf                       42
+    C:\Fonts\roboto\RobotoCondensed-Light.ttf                        41
+    C:\Fonts\roboto\RobotoCondensed-LightItalic.ttf                  47
+    C:\Fonts\roboto\RobotoCondensed-Regular.ttf                      43
+
 
   .Parameter SourceDirectory
     The directory you wish to count the total character length of
