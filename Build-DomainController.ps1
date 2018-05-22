@@ -7,7 +7,7 @@
 Write-Host "What is name of server you want to installed DC services on?" -foregroundcolor Green
 $dc = Read-Host
 
- $online=PingMachine $dc
+ $online= Test-Connection -ComputerName $dc -Count 1 buffersize 16 -Quiet
     if ($online -eq $true)
     {
     # Ping Success
