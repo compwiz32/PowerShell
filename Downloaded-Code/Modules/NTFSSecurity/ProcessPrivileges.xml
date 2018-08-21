@@ -1,0 +1,674 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ProcessPrivileges</name>
+    </assembly>
+    <members>
+        <member name="T:ProcessPrivileges.AccessTokenHandle">
+            <summary>Handle to an access token.</summary>
+        </member>
+        <member name="M:ProcessPrivileges.AccessTokenHandle.ReleaseHandle">
+            <summary>Releases the handle.</summary>
+            <returns>Value indicating if the handle released successfully.</returns>
+        </member>
+        <member name="T:ProcessPrivileges.PrivilegeAndAttributesCollection">
+            <summary>Read-only collection of privilege and attributes.</summary>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeAndAttributesCollection.ToString">
+            <summary>Returns a <see cref="T:System.String"/> representation of the collection.</summary>
+            <returns><see cref="T:System.String"/> representation of the collection.</returns>
+        </member>
+        <member name="T:ProcessPrivileges.PrivilegeEnabler">
+            <summary>Enables privileges on a process in a safe way, ensuring that they are returned to their original state when an operation that requires a privilege completes.</summary>
+            <example>
+                <code>
+            using System;
+            using System.Diagnostics;
+            using ProcessPrivileges;
+            
+            internal static class PrivilegeEnablerExample
+            {
+                public static void Main()
+                {
+                    Process process = Process.GetCurrentProcess();
+            
+                    using (new PrivilegeEnabler(process, Privilege.TakeOwnership))
+                    {
+                        // Privilege is enabled within the using block.
+                        Console.WriteLine(
+                            "{0} => {1}",
+                            Privilege.TakeOwnership,
+                            process.GetPrivilegeState(Privilege.TakeOwnership));
+                    }
+            
+                    // Privilege is disabled outside the using block.
+                    Console.WriteLine(
+                        "{0} => {1}",
+                        Privilege.TakeOwnership,
+                        process.GetPrivilegeState(Privilege.TakeOwnership));
+                }
+            }
+                </code>
+            </example>
+            <remarks>
+                <para>When disabled, privileges are enabled until the instance of the PrivilegeEnabler class is disposed.</para>
+                <para>If the privilege specified is already enabled, it is not modified and will not be disabled when the instance of the PrivilegeEnabler class is disposed.</para>
+                <para>If desired, multiple privileges can be specified in the constructor.</para>
+                <para>If using multiple instances on the same process, do not dispose of them out-of-order. Making use of a using statement, the recommended method, enforces this.</para>
+                <para>For more information on privileges, see:</para>
+                <para><a href="http://msdn.microsoft.com/en-us/library/aa379306.aspx">Privileges</a></para>
+                <para><a href="http://msdn.microsoft.com/en-us/library/bb530716.aspx">Privilege Constants</a></para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeEnabler.#ctor(ProcessPrivileges.AccessTokenHandle)">
+            <summary>Initializes a new instance of the PrivilegeEnabler class.</summary>
+            <param name="accessTokenHandle">The <see cref="T:ProcessPrivileges.AccessTokenHandle"/> for a <see cref="T:System.Diagnostics.Process"/> on which privileges should be enabled.</param>
+            <exception cref="T:System.InvalidOperationException">Thrown when another instance exists and has not been disposed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeEnabler.#ctor(System.Diagnostics.Process)">
+            <summary>Initializes a new instance of the PrivilegeEnabler class.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which privileges should be enabled.</param>
+            <exception cref="T:System.InvalidOperationException">Thrown when another instance exists and has not been disposed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeEnabler.#ctor(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege[])">
+            <summary>Initializes a new instance of the PrivilegeEnabler class with the specified privileges to be enabled.</summary>
+            <param name="accessTokenHandle">The <see cref="T:ProcessPrivileges.AccessTokenHandle"/> for a <see cref="T:System.Diagnostics.Process"/> on which privileges should be enabled.</param>
+            <param name="privileges">The privileges to be enabled.</param>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeEnabler.#ctor(System.Diagnostics.Process,ProcessPrivileges.Privilege[])">
+            <summary>Initializes a new instance of the PrivilegeEnabler class with the specified privileges to be enabled.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which privileges should be enabled.</param>
+            <param name="privileges">The privileges to be enabled.</param>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeEnabler.Finalize">
+            <summary>Finalizes an instance of the PrivilegeEnabler class.</summary>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeEnabler.Dispose">
+            <summary>Disposes of an instance of the PrivilegeEnabler class.</summary>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.Demand">Requires the call stack to have FullTrust.</permission>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeEnabler.EnablePrivilege(ProcessPrivileges.Privilege)">
+            <summary>Enables the specified <see cref="T:ProcessPrivileges.Privilege"/>.</summary>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> to be enabled.</param>
+            <returns>
+                <para>Result from the privilege adjustment.</para>
+                <para>If the <see cref="T:ProcessPrivileges.Privilege"/> is already enabled, <see cref="F:ProcessPrivileges.AdjustPrivilegeResult.None"/> is returned.</para>
+                <para>If the <see cref="T:ProcessPrivileges.Privilege"/> is owned by another instance of the PrivilegeEnabler class, <see cref="F:ProcessPrivileges.AdjustPrivilegeResult.None"/> is returned.</para>
+                <para>If a <see cref="T:ProcessPrivileges.Privilege"/> is removed from a process, it cannot be enabled.</para>
+            </returns>
+            <remarks>
+                <para>When disabled, privileges are enabled until the instance of the PrivilegeEnabler class is disposed.</para>
+                <para>If the privilege specified is already enabled, it is not modified and will not be disabled when the instance of the PrivilegeEnabler class is disposed.</para>
+            </remarks>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+        </member>
+        <member name="T:ProcessPrivileges.AdjustPrivilegeResult">
+            <summary>Result from a privilege adjustment.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.AdjustPrivilegeResult.None">
+            <summary>Privilege not modified.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.AdjustPrivilegeResult.PrivilegeModified">
+            <summary>Privilege modified.</summary>
+        </member>
+        <member name="T:ProcessPrivileges.Privilege">
+            <summary>Privilege determining the type of system operations that can be performed.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.AssignPrimaryToken">
+            <summary>Privilege to replace a process-level token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Audit">
+            <summary>Privilege to generate security audits.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Backup">
+            <summary>Privilege to backup files and directories.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.ChangeNotify">
+            <summary>Privilege to bypass traverse checking.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.CreateGlobal">
+            <summary>Privilege to create global objects.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.CreatePageFile">
+            <summary>Privilege to create a pagefile.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.CreatePermanent">
+            <summary>Privilege to create permanent shared objects.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.CreateSymbolicLink">
+            <summary>Privilege to create symbolic links.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.CreateToken">
+            <summary>Privilege to create a token object.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Debug">
+            <summary>Privilege to debug programs.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.EnableDelegation">
+            <summary>Privilege to enable computer and user accounts to be trusted for delegation.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Impersonate">
+            <summary>Privilege to impersonate a client after authentication.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.IncreaseBasePriority">
+            <summary>Privilege to increase scheduling priority.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.IncreaseQuota">
+            <summary>Privilege to adjust memory quotas for a process.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.IncreaseWorkingSet">
+            <summary>Privilege to increase a process working set.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.LoadDriver">
+            <summary>Privilege to load and unload device drivers.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.LockMemory">
+            <summary>Privilege to lock pages in memory.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.MachineAccount">
+            <summary>Privilege to add workstations to domain.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.ManageVolume">
+            <summary>Privilege to manage the files on a volume.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.ProfileSingleProcess">
+            <summary>Privilege to profile single process.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Relabel">
+            <summary>Privilege to modify an object label.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.RemoteShutdown">
+            <summary>Privilege to force shutdown from a remote system.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Restore">
+            <summary>Privilege to restore files and directories.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Security">
+            <summary>Privilege to manage auditing and security log.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Shutdown">
+            <summary>Privilege to shut down the system.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.SyncAgent">
+            <summary>Privilege to synchronize directory service data.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.SystemEnvironment">
+            <summary>Privilege to modify firmware environment values.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.SystemProfile">
+            <summary>Privilege to profile system performance.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.SystemTime">
+            <summary>Privilege to change the system time.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.TakeOwnership">
+            <summary>Privilege to take ownership of files or other objects.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.TrustedComputerBase">
+            <summary>Privilege to act as part of the operating system.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.TimeZone">
+            <summary>Privilege to change the time zone.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.TrustedCredentialManagerAccess">
+            <summary>Privilege to access Credential Manager as a trusted caller.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.Undock">
+            <summary>Privilege to remove computer from docking station.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.Privilege.UnsolicitedInput">
+            <summary>Privilege to read unsolicited input from a terminal device.</summary>
+        </member>
+        <member name="T:ProcessPrivileges.PrivilegeState">
+            <summary>State of a <see cref="T:ProcessPrivileges.Privilege"/>, derived from <see cref="T:ProcessPrivileges.PrivilegeAttributes"/>.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.PrivilegeState.Disabled">
+            <summary>
+            Privilege is disabled.
+            </summary>
+        </member>
+        <member name="F:ProcessPrivileges.PrivilegeState.Enabled">
+            <summary>
+            Privilege is enabled.
+            </summary>
+        </member>
+        <member name="F:ProcessPrivileges.PrivilegeState.Removed">
+            <summary>
+            Privilege is removed.
+            </summary>
+        </member>
+        <member name="T:ProcessPrivileges.PrivilegeAttributes">
+            <summary>
+                <para>Privilege attributes that augment a <see cref="T:ProcessPrivileges.Privilege"/> with state information.</para>
+            </summary>
+            <remarks>
+                <para>Use the following checks to interpret privilege attributes:</para>
+                <para>
+                    <c>// Privilege is disabled.<br/>if (attributes == PrivilegeAttributes.Disabled) { /* ... */ }</c>
+                </para>
+                <para>
+                    <c>// Privilege is enabled.<br/>if ((attributes &amp; PrivilegeAttributes.Enabled) == PrivilegeAttributes.Enabled) { /* ... */ }</c>
+                </para>
+                <para>
+                    <c>// Privilege is removed.<br/>if ((attributes &amp; PrivilegeAttributes.Removed) == PrivilegeAttributes.Removed) { /* ... */ }</c>
+                </para>
+                <para>To avoid having to work with a flags based enumerated type, use <see cref="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeState(ProcessPrivileges.PrivilegeAttributes)"/> on attributes.</para>
+            </remarks>
+        </member>
+        <member name="F:ProcessPrivileges.PrivilegeAttributes.Disabled">
+            <summary>Privilege is disabled.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.PrivilegeAttributes.EnabledByDefault">
+            <summary>Privilege is enabled by default.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.PrivilegeAttributes.Enabled">
+            <summary>Privilege is enabled.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.PrivilegeAttributes.Removed">
+            <summary>Privilege is removed.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.PrivilegeAttributes.UsedForAccess">
+            <summary>Privilege used to gain access to an object or service.</summary>
+        </member>
+        <member name="T:ProcessPrivileges.TokenAccessRights">
+            <summary>Access rights for access tokens.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.AssignPrimary">
+            <summary>Right to attach a primary token to a process.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.Duplicate">
+            <summary>Right to duplicate an access token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.Impersonate">
+            <summary>Right to attach an impersonation access token to a process.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.Query">
+            <summary>Right to query an access token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.QuerySource">
+            <summary>Right to query the source of an access token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.AdjustPrivileges">
+            <summary>Right to enable or disable the privileges in an access token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.AdjustGroups">
+            <summary>Right to adjust the attributes of the groups in an access token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.AdjustDefault">
+            <summary>Right to change the default owner, primary group, or DACL of an access token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.AdjustSessionId">
+            <summary>Right to adjust the session ID of an access token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.AllAccess">
+            <summary>Combines all possible access rights for a token.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.Read">
+            <summary>Combines the standard rights required to read with <see cref="F:ProcessPrivileges.TokenAccessRights.Query"/>.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.Write">
+            <summary>Combines the standard rights required to write with <see cref="F:ProcessPrivileges.TokenAccessRights.AdjustDefault"/>, <see cref="F:ProcessPrivileges.TokenAccessRights.AdjustGroups"/> and <see cref="F:ProcessPrivileges.TokenAccessRights.AdjustPrivileges"/>.</summary>
+        </member>
+        <member name="F:ProcessPrivileges.TokenAccessRights.Execute">
+            <summary>Combines the standard rights required to execute with <see cref="F:ProcessPrivileges.TokenAccessRights.Impersonate"/>.</summary>
+        </member>
+        <member name="T:ProcessPrivileges.NativeMethods">
+            <summary>Static class containing Win32 native methods.</summary>
+        </member>
+        <member name="T:ProcessPrivileges.ProcessExtensions">
+            <summary>Provides extension methods to the <see cref="T:System.Diagnostics.Process" /> class, implementing the functionality necessary to query, enable, disable or remove privileges on a process.</summary>
+            <example>
+                <code>
+            using System;
+            using System.Diagnostics;
+            using System.Linq;
+            using ProcessPrivileges;
+            
+            internal static class ProcessPrivilegesExample
+            {
+                public static void Main()
+                {
+                    // Get the current process.
+                    Process process = Process.GetCurrentProcess();
+            
+                    // Get the privileges and associated attributes.
+                    PrivilegeAndAttributesCollection privileges = process.GetPrivileges();
+            
+                    int maxPrivilegeLength = privileges.Max(privilege =&gt; privilege.Privilege.ToString().Length);
+            
+                    foreach (PrivilegeAndAttributes privilegeAndAttributes in privileges)
+                    {
+                        // The privilege.
+                        Privilege privilege = privilegeAndAttributes.Privilege;
+            
+                        // The privilege state.
+                        PrivilegeState privilegeState = privilegeAndAttributes.PrivilegeState;
+            
+                        // Write out the privilege and its state.
+                        Console.WriteLine(
+                            "{0}{1} =&gt; {2}",
+                            privilege,
+                            GetPadding(privilege.ToString().Length, maxPrivilegeLength),
+                            privilegeState);
+                    }
+            
+                    Console.WriteLine();
+            
+                    // Privileges can only be enabled on a process if they are disabled.
+                    if (process.GetPrivilegeState(Privilege.TakeOwnership) == PrivilegeState.Disabled)
+                    {
+                        // Enable the TakeOwnership privilege on it.
+                        AdjustPrivilegeResult result = process.EnablePrivilege(Privilege.TakeOwnership);
+            
+                        // Get the state of the TakeOwnership privilege.
+                        PrivilegeState takeOwnershipState = process.GetPrivilegeState(Privilege.TakeOwnership);
+            
+                        // Write out the TakeOwnership privilege, its state and the result.
+                        Console.WriteLine(
+                            "{0}{1} =&gt; {2} ({3})",
+                            Privilege.TakeOwnership,
+                            GetPadding(Privilege.TakeOwnership.ToString().Length, maxPrivilegeLength),
+                            takeOwnershipState,
+                            result);
+                    }
+                }
+            
+                private static string GetPadding(int length, int maxLength)
+                {
+                    int paddingLength = maxLength - length;
+                    char[] padding = new char[paddingLength];
+                    for (int i = 0; i &lt; paddingLength; i++)
+                    {
+                        padding[i] = ' ';
+                    }
+            
+                    return new string(padding);
+                }
+            }
+                </code>
+                <code>
+            using System;
+            using System.Diagnostics;
+            using ProcessPrivileges;
+            
+            internal static class ReusingAccessTokenHandleExample
+            {
+                public static void Main()
+                {
+                    // Access token handle reused within the using block.
+                    using (AccessTokenHandle accessTokenHandle =
+                        Process.GetCurrentProcess().GetAccessTokenHandle(
+                            TokenAccessRights.AdjustPrivileges | TokenAccessRights.Query))
+                    {
+                        // Enable privileges using the same access token handle.
+                        AdjustPrivilegeResult backupResult = accessTokenHandle.EnablePrivilege(Privilege.Backup);
+                        AdjustPrivilegeResult restoreResult = accessTokenHandle.EnablePrivilege(Privilege.Restore);
+            
+                        Console.WriteLine(
+                            "{0} => {1} ({2})",
+                            Privilege.Backup,
+                            accessTokenHandle.GetPrivilegeState(Privilege.Backup),
+                            backupResult);
+            
+                        Console.WriteLine(
+                            "{0} => {1} ({2})",
+                            Privilege.Restore,
+                            accessTokenHandle.GetPrivilegeState(Privilege.Restore),
+                            restoreResult);
+                    }
+                }
+            }
+                </code>
+            </example>
+            <remarks>
+                <para>For more information on privileges, see:</para>
+                <para><a href="http://msdn.microsoft.com/en-us/library/aa379306.aspx">Privileges</a></para>
+                <para><a href="http://msdn.microsoft.com/en-us/library/bb530716.aspx">Privilege Constants</a></para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.DisablePrivilege(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)">
+            <summary>Disables the specified <see cref="T:ProcessPrivileges.Privilege"/> on a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="accessTokenHandle">The <see cref="T:ProcessPrivileges.AccessTokenHandle"/> for a <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> to be disabled.</param>
+            <returns>
+                <para>Result from the privilege adjustment.</para>
+                <para>If the <see cref="T:ProcessPrivileges.Privilege"/> is already disabled, <see cref="F:ProcessPrivileges.AdjustPrivilegeResult.None"/> is returned.</para>
+            </returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>The caller must have permission to query and adjust token privileges on the target process.</remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.DisablePrivilege(System.Diagnostics.Process,ProcessPrivileges.Privilege)">
+            <summary>Disables the specified <see cref="T:ProcessPrivileges.Privilege"/> on a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> to be disabled.</param>
+            <returns>
+                <para>Result from the privilege adjustment.</para>
+                <para>If the <see cref="T:ProcessPrivileges.Privilege"/> is already disabled, <see cref="F:ProcessPrivileges.AdjustPrivilegeResult.None"/> is returned.</para>
+            </returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>If you are adjusting multiple privileges on a process, consider using <see cref="M:ProcessPrivileges.ProcessExtensions.DisablePrivilege(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)"/> with an access token handle for the process.</para>
+                <para>The caller must have permission to query and adjust token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.EnablePrivilege(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)">
+            <summary>Enables the specified <see cref="T:ProcessPrivileges.Privilege"/> on a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="accessTokenHandle">The <see cref="T:ProcessPrivileges.AccessTokenHandle"/> for a <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> to be enabled.</param>
+            <returns>
+                <para>Result from the privilege adjustment.</para>
+                <para>If the <see cref="T:ProcessPrivileges.Privilege"/> is already enabled, <see cref="F:ProcessPrivileges.AdjustPrivilegeResult.None"/> is returned.</para>
+            </returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>Enabling a privilege allows a process to perform system-level actions that it could not previously.</para>
+                <para>Before enabling a privilege, many potentially dangerous, thoroughly verify that functions or operations in your code actually require them.</para>
+                <para>It is not normally appropriate to hold privileges for the lifetime of a process. Use sparingly; enable when needed, disable when not.</para>
+                <para>Consider using <see cref="T:ProcessPrivileges.PrivilegeEnabler"/> that enables privileges on a process in a safe way, ensuring that they are returned to their original state when an operation that requires a privilege completes.</para>
+                <para>The caller must have permission to query and adjust token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.EnablePrivilege(System.Diagnostics.Process,ProcessPrivileges.Privilege)">
+            <summary>Enables the specified <see cref="T:ProcessPrivileges.Privilege"/> on a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> to be enabled.</param>
+            <returns>
+                <para>Result from the privilege adjustment.</para>
+                <para>If the <see cref="T:ProcessPrivileges.Privilege"/> is already enabled, <see cref="F:ProcessPrivileges.AdjustPrivilegeResult.None"/> is returned.</para>
+                <para>If a <see cref="T:ProcessPrivileges.Privilege"/> is removed from a process, it cannot be enabled.</para>
+            </returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>Enabling a privilege allows a process to perform system-level actions that it could not previously.</para>
+                <para>Before enabling a privilege, many potentially dangerous, thoroughly verify that functions or operations in your code actually require them.</para>
+                <para>It is not normally appropriate to hold privileges for the lifetime of a process. Use sparingly; enable when needed, disable when not.</para>
+                <para>Consider using <see cref="T:ProcessPrivileges.PrivilegeEnabler"/> that enables privileges on a process in a safe way, ensuring that they are returned to their original state when an operation that requires a privilege completes.</para>
+                <para>If you are adjusting multiple privileges on a process, consider using <see cref="M:ProcessPrivileges.ProcessExtensions.EnablePrivilege(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)"/> with an access token handle for the process.</para>
+                <para>The caller must have permission to query and adjust token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetAccessTokenHandle(System.Diagnostics.Process)">
+            <summary>Gets an access token handle for a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which an access token handle should be retrieved.</param>
+            <returns>An access token handle for a <see cref="T:System.Diagnostics.Process"/> with <see cref="F:ProcessPrivileges.TokenAccessRights.AllAccess"/> access rights.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>The caller must have permission to acquire an access token handle with all access rights.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetAccessTokenHandle(System.Diagnostics.Process,ProcessPrivileges.TokenAccessRights)">
+            <summary>Gets an access token handle for a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which an access token handle should be retrieved.</param>
+            <param name="tokenAccessRights">The desired access rights for the access token handle.</param>
+            <returns>An access token handle for a <see cref="T:System.Diagnostics.Process"/>.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>The caller must have permission to acquire an access token handle with the desired access rights.</para>
+                <para>To query permissions, the access token handle must have permission to query and adjust token privileges:</para>
+                <c>TokenAccessRights.Query</c>
+                <para>To enable, disable or remove a permission, the access token handle must have permission to query and adjust token privileges:</para>
+                <c>TokenAccessRights.AdjustPrivileges | TokenAccessRights.Query</c>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeAttributes(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)">
+            <summary>Gets the attributes for a <see cref="T:ProcessPrivileges.Privilege"/> on a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="accessTokenHandle">The <see cref="T:ProcessPrivileges.AccessTokenHandle"/> for a <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> on which the attributes should be retrieved.</param>
+            <returns>The <see cref="T:ProcessPrivileges.PrivilegeAttributes"/> for a <see cref="T:ProcessPrivileges.Privilege"/> on a <see cref="T:System.Diagnostics.Process"/>.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>Consider using <see cref="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeState(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)"/> as it avoids the need to work with a flags based enumerated type.</para>
+                <para>The caller must have permission to query token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeAttributes(System.Diagnostics.Process,ProcessPrivileges.Privilege)">
+            <summary>Gets the attributes for a <see cref="T:ProcessPrivileges.Privilege"/> on a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> on which the attributes should be retrieved.</param>
+            <returns>The <see cref="T:ProcessPrivileges.PrivilegeAttributes"/> for a <see cref="T:ProcessPrivileges.Privilege"/> on a <see cref="T:System.Diagnostics.Process"/>.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>Consider using <see cref="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeState(System.Diagnostics.Process,ProcessPrivileges.Privilege)"/> as it avoids the need to work with a flags based enumerated type.</para>
+                <para>The caller must have permission to query token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetPrivileges(ProcessPrivileges.AccessTokenHandle)">
+            <summary>Gets the privileges and associated attributes from a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="accessTokenHandle">The <see cref="T:ProcessPrivileges.AccessTokenHandle"/> for a <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <returns>The privileges associated with a process.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>Consider using <see cref="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeState(ProcessPrivileges.PrivilegeAttributes)"/> on attributes within the collection as it avoids the need to work with a flags based enumerated type.</para>
+                <para>The caller must have permission to query token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetPrivileges(System.Diagnostics.Process)">
+            <summary>Gets the privileges and associated attributes from a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <returns>The privileges associated with a process.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>Consider using <see cref="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeState(ProcessPrivileges.PrivilegeAttributes)"/> method on attributes within the collection as it avoids the need to work with a flags based enumerated type.</para>
+                <para>The caller must have permission to query token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeState(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)">
+            <summary>Gets the state of a <see cref="T:ProcessPrivileges.Privilege"/>.</summary>
+            <param name="accessTokenHandle">The <see cref="T:ProcessPrivileges.AccessTokenHandle"/> for a <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> that should be checked.</param>
+            <returns>The <see cref="T:ProcessPrivileges.PrivilegeState"/> of the <see cref="T:ProcessPrivileges.Privilege"/>.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>Derives <see cref="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeAttributes(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)"/> to establish the <see cref="T:ProcessPrivileges.PrivilegeState"/> of a <see cref="T:ProcessPrivileges.Privilege"/>.</para>
+                <para>The caller must have permission to query token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeState(System.Diagnostics.Process,ProcessPrivileges.Privilege)">
+            <summary>Gets the state of a <see cref="T:ProcessPrivileges.Privilege"/>.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> that should be checked.</param>
+            <returns>The <see cref="T:ProcessPrivileges.PrivilegeState"/> of the <see cref="T:ProcessPrivileges.Privilege"/>.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>Derives <see cref="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeAttributes(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)"/> to establish the <see cref="T:ProcessPrivileges.PrivilegeState"/> of a <see cref="T:ProcessPrivileges.Privilege"/>.</para>
+                <para>The caller must have permission to query token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.GetPrivilegeState(ProcessPrivileges.PrivilegeAttributes)">
+            <summary>Gets the state of a <see cref="T:ProcessPrivileges.Privilege"/>.</summary>
+            <param name="privilegeAttributes">The privilege attributes.</param>
+            <returns>The <see cref="T:ProcessPrivileges.PrivilegeState"/> of the <see cref="T:ProcessPrivileges.Privilege"/>.</returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <remarks>Derives <see cref="T:ProcessPrivileges.PrivilegeAttributes"/> to establish the <see cref="T:ProcessPrivileges.PrivilegeState"/> of a <see cref="T:ProcessPrivileges.Privilege"/>.</remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.RemovePrivilege(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)">
+            <summary>Removes the specified <see cref="T:ProcessPrivileges.Privilege"/> from a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="accessTokenHandle">The <see cref="T:ProcessPrivileges.AccessTokenHandle"/> for a <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> to be removed.</param>
+            <returns>
+                <para>Result from the privilege adjustment.</para>
+                <para>Once a privilege has been removed from a process, it cannot be restored afterwards.</para>
+            </returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>The caller must have permission to query and adjust token privileges on the target process.</remarks>
+        </member>
+        <member name="M:ProcessPrivileges.ProcessExtensions.RemovePrivilege(System.Diagnostics.Process,ProcessPrivileges.Privilege)">
+            <summary>Removes the specified <see cref="T:ProcessPrivileges.Privilege"/> from a <see cref="T:System.Diagnostics.Process"/>.</summary>
+            <param name="process">The <see cref="T:System.Diagnostics.Process"/> on which the operation should be performed.</param>
+            <param name="privilege">The <see cref="T:ProcessPrivileges.Privilege"/> to be removed.</param>
+            <returns>
+                <para>Result from the privilege adjustment.</para>
+                <para>Once a privilege has been removed from a process, it cannot be restored afterwards.</para>
+            </returns>
+            <exception cref="T:System.ComponentModel.Win32Exception">Thrown when an underlying Win32 function call does not succeed.</exception>
+            <permission cref="F:System.Security.Permissions.SecurityAction.LinkDemand">Requires the immediate caller to have FullTrust.</permission>
+            <remarks>
+                <para>If you are adjusting multiple privileges on a process, consider using <see cref="M:ProcessPrivileges.ProcessExtensions.RemovePrivilege(ProcessPrivileges.AccessTokenHandle,ProcessPrivileges.Privilege)"/> with an access token handle for the process.</para>
+                <para>The caller must have permission to query and adjust token privileges on the target process.</para>
+            </remarks>
+        </member>
+        <member name="T:ProcessPrivileges.PrivilegeAndAttributes">
+            <summary>Structure that links <see cref="P:ProcessPrivileges.PrivilegeAndAttributes.Privilege"/> and <see cref="P:ProcessPrivileges.PrivilegeAndAttributes.PrivilegeAttributes"/> together.</summary>
+        </member>
+        <member name="P:ProcessPrivileges.PrivilegeAndAttributes.Privilege">
+            <summary>Gets the privilege.</summary>
+            <value>The privilege.</value>
+        </member>
+        <member name="P:ProcessPrivileges.PrivilegeAndAttributes.PrivilegeAttributes">
+            <summary>Gets the privilege attributes.</summary>
+            <value>The privilege attributes.</value>
+        </member>
+        <member name="P:ProcessPrivileges.PrivilegeAndAttributes.PrivilegeState">
+            <summary>Gets the privilege state.</summary>
+            <value>The privilege state.</value>
+            <remarks>Derived from <see cref="P:ProcessPrivileges.PrivilegeAndAttributes.PrivilegeAttributes"/>.</remarks>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeAndAttributes.op_Equality(ProcessPrivileges.PrivilegeAndAttributes,ProcessPrivileges.PrivilegeAndAttributes)">
+            <summary>Compares two instances for equality.</summary>
+            <param name="first">First instance.</param>
+            <param name="second">Second instance.</param>
+            <returns>Value indicating equality of instances.</returns>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeAndAttributes.op_Inequality(ProcessPrivileges.PrivilegeAndAttributes,ProcessPrivileges.PrivilegeAndAttributes)">
+            <summary>Compares two instances for inequality.</summary>
+            <param name="first">First instance.</param>
+            <param name="second">Second instance.</param>
+            <returns>Value indicating inequality of instances.</returns>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeAndAttributes.GetHashCode">
+            <summary>Returns the hash code for this instance.</summary>
+            <returns>The hash code for this instance.</returns>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeAndAttributes.Equals(System.Object)">
+            <summary>Indicates whether this instance and a specified object are equal.</summary>
+            <param name="obj">Another object to compare to.</param>
+            <returns>Value indicating whether this instance and a specified object are equal.</returns>
+        </member>
+        <member name="M:ProcessPrivileges.PrivilegeAndAttributes.Equals(ProcessPrivileges.PrivilegeAndAttributes)">
+            <summary>Indicates whether this instance and another instance are equal.</summary>
+            <param name="other">Another instance to compare to.</param>
+            <returns>Value indicating whether this instance and another instance are equal.</returns>
+        </member>
+    </members>
+</doc>
