@@ -87,7 +87,7 @@ Foreach ($computer in $ComputerName)
     if ($online -eq $true)
      {
       $PageFileResults = Get-CimInstance -Class Win32_PageFileUsage -ComputerName $Computer | Select-Object *
-      $CompSysResults = Get-CimInstance win32_computersystem  -Namespace 'root\cimv2'
+      $CompSysResults = Get-CimInstance win32_computersystem -ComputerName $Computer -Namespace 'root\cimv2'
     
       $PageFileStats = [PSCustomObject]@{
         Computer = $computer
