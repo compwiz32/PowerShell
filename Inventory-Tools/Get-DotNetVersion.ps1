@@ -9,4 +9,3 @@
     Sort-Object -Property Version -Descending |
     Format-Table -AutoSize
 }
-Get-DotNetVersion
