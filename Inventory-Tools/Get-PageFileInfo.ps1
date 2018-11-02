@@ -6,11 +6,10 @@ Function Get-PageFileInfo
   Returns info about the page file size of a Windows computer. Defaults to local machine. 
 
  .Description 
-  Returns the pagefile size info in MB. Also returns the PageFilePath, PageFileTotalSize, PagefileCurrentUsage,
-  and PageFilePeakusage. Also returns if computer is using a TempPafeFile and if the machine's pagefile is
-  managed by O/S (AutoManaged = true) or statically set (AutoManaged = False)
-
-  
+  Returns the pagefile size info in MB. Also returns the PageFilePath, PageFileTotalSize, 
+  PagefileCurrentUsage, and PageFilePeakusage. Also returns if computer is using a TempPafeFile 
+  and if the machine's pagefile is managed by O/S (AutoManaged = true) or 
+  statically set (AutoManaged = False)
 
  .Example 
   Get-PageFileInfo -computername SRV01
