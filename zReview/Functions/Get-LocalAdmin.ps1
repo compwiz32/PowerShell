@@ -13,7 +13,7 @@
   Get-LocalAdmin -ComputerName Server01
   Returns a list of local admins from from Server 01.
 
-    .Notes
+  .Notes
   NAME: Get-LocalAdmin
   AUTHOR: Mike Kanakos
   CREATED: 2016-01-05
@@ -25,7 +25,7 @@
 
 [CmdletBinding()]
 Param(
-  [Parameter(Mandatory=$True,Position=1)]
+  [Parameter(Mandatory=$True,Position=0)]
    [string]$ComputerName
     )
 
