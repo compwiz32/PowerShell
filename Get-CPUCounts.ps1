@@ -1,4 +1,4 @@
-﻿#$Servers1 = Get-ADComputer -LDAPFilter “(&(objectcategory=computer)(OperatingSystem=*server*))” | Select-Object name
+#$Servers1 = Get-ADComputer -LDAPFilter “(&(objectcategory=computer)(OperatingSystem=*server*))” | Select-Object name
 $serverlist = Import-Csv "C:\Scripts\Output\ServerList.csv"
 
 [array]$fullCompObject     = $null

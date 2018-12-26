@@ -1,7 +1,7 @@
 ﻿Function Get-LocalAdmin
 {
 
-<#
+<#s
   .Synopsis
   lists the members of the local admins group
 
@@ -27,7 +27,7 @@
 Param(
   [Parameter(Mandatory=$True,Position=0)]
    [string]$ComputerName
-    )
+)
 
 
 #List current group membership of local admin group
