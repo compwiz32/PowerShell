@@ -23,8 +23,8 @@ function Backup-GroupPolicy {
     c:\Backups\ or \\server\share\
 
     .PARAMETER Domain
-    Specifies the domain to look for Group Policies. If not entered, the domain that PC running the cmdlet is
-    joined to will be selected.
+    Specifies the domain to look for Group Policies. This is auto populated with the domain info from the PC running
+    the cmdlet.
 
     .PARAMETER Server
     Specifies the Domain Controller to query for group Policies to backup
@@ -47,9 +47,9 @@ function Backup-GroupPolicy {
     .NOTES
     Name       : Backup-GroupPolicy.ps1
     Author     : Mike Kanakos
-    Version    : 1.0.1
+    Version    : 1.0.2
     DateCreated: 2018-12-19
-    DateUpdated: 2018-12-21
+    DateUpdated: 2018-12-28
 
     .LINK
     https://https://github.com/compwiz32/PowerShell
@@ -83,7 +83,7 @@ param (
         New-item $UpdatedPath -ItemType directory | Out-Null
 
         Write-Host "GPO's will be backed up to $UpdatedPath"
-        }
+    } #end of begin block
 
     process {
 
@@ -101,10 +101,10 @@ param (
             #rename the newly created GPO backup sub folder from it's GPO ID to the GPO Displayname
             rename-item $CurrentFolderName -newname $NewFolderName
 
-        }
+        } #end ForEach loop
 
-    }
+    } #end of process block
 
     end {
-    }
-}
+    } #End of End block
+} #end of function
