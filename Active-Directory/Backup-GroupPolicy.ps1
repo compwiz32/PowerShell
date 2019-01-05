@@ -33,26 +33,26 @@ function Backup-GroupPolicy {
     Backup-GroupPolicy -path C:\Backup
 
     Description:
-    Performs a backup of the GPO's and saves them to the c:\backups folder. Since no server was specified, the code will
-    search for the nearest Domain Controller.
+    This example creates a backup of the GPO's and saves them to the c:\backup folder.
+    Since no server was specified, the code will search for the nearest Domain Controller.
 
     .EXAMPLE
     Backup-GroupPolicy -path C:\Backup -Domain nwtraders.local -Server DC01
 
     Description:
-    Will backup GPO's in the nwtraders.local domain to the C:\Backups folder. The backups will be pulled from
-    the DC named DC01.
+    This example creates a backup of GPO's in the nwtraders.local domain to the C:\Backup folder.
+    The backups will be pulled from the DC named DC01.
 
 
     .NOTES
     Name       : Backup-GroupPolicy.ps1
     Author     : Mike Kanakos
-    Version    : 1.0.2
+    Version    : 1.0.3
     DateCreated: 2018-12-19
-    DateUpdated: 2018-12-28
+    DateUpdated: 2019-01-05
 
     .LINK
-    https://https://github.com/compwiz32/PowerShell
+    https://github.com/compwiz32/PowerShell
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
