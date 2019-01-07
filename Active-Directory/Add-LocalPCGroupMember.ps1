@@ -55,9 +55,9 @@ param(
     $ComputerName,
 
     [Parameter(Mandatory=$true,Position=2)]
-    [ValidateSet("Administrators","Remote Desktop Users")]
+    [ValidateSet('Administrators','Remote Desktop Users','Remote Management Users', 'Users', 'Event Log Readers')]
     [String]
-    $Group = "Administrators"
+    $Group = 'Administrators'
     )
 
         begin{
