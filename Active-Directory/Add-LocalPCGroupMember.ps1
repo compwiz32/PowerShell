@@ -15,8 +15,9 @@ Specifies a computer to add the users to. Multiple computers can be specificed w
 The SamAccount name of an AD User or AD Group that will be added to a local group on the local PC.
 
 .PARAMETER Group
-The name of the LocalGroup on target computer that the account will be added to. Valid choices are Administrators or
-RemoteDesktopUsers only. If no choice is made, the default will be Administrators
+The name of the LocalGroup on target computer that the account will be added to. Valid choices are
+Administrators,'Remote Desktop Users','Remote Management Users', 'Users' and 'Event Log Readers'.
+If no choice is made, the default will be Administrators
 
 .EXAMPLE
 Add-LocalPCGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
@@ -34,9 +35,9 @@ Will add the HRManagers group as a member of Remote Desktop Users group on compu
 .NOTES
 Name       : Add-LocalPCGroupMember.ps1
 Author     : Mike Kanakos
-Version    : 1.0.7
+Version    : 1.0.8
 DateCreated: 2018-12-03
-DateUpdated: 2019-01-07
+DateUpdated: 2019-01-09
 
 .LINK
 https://https://github.com/compwiz32/PowerShell
