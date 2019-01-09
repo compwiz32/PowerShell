@@ -34,9 +34,9 @@ Will add the HRManagers group as a member of Remote Desktop Users group on compu
 .NOTES
 Name       : Add-LocalPCGroupMember.ps1
 Author     : Mike Kanakos
-Version    : 1.0.6
+Version    : 1.0.7
 DateCreated: 2018-12-03
-DateUpdated: 2019-01-04
+DateUpdated: 2019-01-07
 
 .LINK
 https://https://github.com/compwiz32/PowerShell
