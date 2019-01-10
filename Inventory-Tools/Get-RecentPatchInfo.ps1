@@ -55,7 +55,7 @@ Function Get-RecentPatchInfo {
      .Notes
      Name       : Get-LocalPCGroupMember.ps1
      Author     : Mike Kanakos
-     Version    : 1.0.1
+     Version    : 1.0.2
      DateCreated: 2019-01-09
      DateUpdated: 2019-01-09
 
@@ -66,8 +66,8 @@ Function Get-RecentPatchInfo {
 
     [CmdletBinding()]
     Param(
-
         [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [alias("Name","MachineName","Computer")]
         [string[]]
         $ComputerName = 'localhost'
     )
