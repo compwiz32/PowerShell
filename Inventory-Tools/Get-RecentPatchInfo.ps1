@@ -13,12 +13,40 @@ Function Get-RecentPatchInfo {
      Get-RecentPatchInfo
 
      Description:
+     Returns last installed patch and reboot info for the localhost.
+
+     Computer           : localhost
+     PatchType          : Security Update
+     LastInstalledPatch : KB4483232
+     InstallDate        : 1/4/2019 12:00:00 AM
+     LastRestartTime    : 1/8/2019 8:57:51 AM
 
 
      .Example
-     Get-RecentPatchInfo -computer berlin
+     Get-RecentPatchInfo DC01, DC02
 
      Description:
+     Returns last installed patch and reboot info for the localhost.
+
+     Computer           : DC01
+     PatchType          : Update
+     LastInstalledPatch : KB4467695
+     InstallDate        : 12/15/2018 12:00:00 AM
+     LastRestartTime    : 12/15/2018 6:24:32 AM
+
+     Computer           : DC02
+     PatchType          : Update
+     LastInstalledPatch : KB4467695
+     InstallDate        : 12/20/2018 12:00:00 AM
+     LastRestartTime    : 12/20/2018 12:26:11 AM
+
+    .Example
+     Get-RecentPatchInfo -computername DC01, DC02 | ft
+
+     Computer    PatchType LastInstalledPatch InstallDate            LastRestartTime
+     --------    --------- ------------------ -----------            ---------------
+     DC01        Update    KB4467695          12/15/2018 12:00:00 AM 12/15/2018 6:24:32 AM
+     DC02        Update    KB4467695          12/20/2018 12:00:00 AM 12/20/2018 12:26:11 AM
 
 
      .Notes
