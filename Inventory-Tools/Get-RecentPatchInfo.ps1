@@ -26,7 +26,7 @@ Function Get-RecentPatchInfo {
      Get-RecentPatchInfo DC01, DC02
 
      Description:
-     Returns last installed patch and reboot info for the localhost.
+     Returns last installed patch and reboot info for the computers named DC01 and DC02.
 
      Computer           : DC01
      PatchType          : Update
@@ -41,7 +41,10 @@ Function Get-RecentPatchInfo {
      LastRestartTime    : 12/20/2018 12:26:11 AM
 
     .Example
-     Get-RecentPatchInfo -computername DC01, DC02 | ft
+     Get-RecentPatchInfo -computername DC01, DC02 | format-table
+
+     Returns last installed patch and reboot info for the computers named DC01 and DC02 and formats the out as
+     a table.
 
      Computer    PatchType LastInstalledPatch InstallDate            LastRestartTime
      --------    --------- ------------------ -----------            ---------------
