@@ -26,7 +26,7 @@ Description:
 Will add the account named Michael_Kanakos to the local Administrators group on the computer named Server01
 
 .EXAMPLE
-Add-LocalPCGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group RemoteDesktopUsers
+Add-LocalPCGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
 
 Description:
 Will add the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
@@ -35,12 +35,12 @@ Will add the HRManagers group as a member of Remote Desktop Users group on compu
 .NOTES
 Name       : Add-LocalPCGroupMember.ps1
 Author     : Mike Kanakos
-Version    : 1.0.8
+Version    : 1.0.9
 DateCreated: 2018-12-03
-DateUpdated: 2019-01-09
+DateUpdated: 2019-01-15
 
 .LINK
-https://https://github.com/compwiz32/PowerShell
+https://github.com/compwiz32/PowerShell
 
 
 #>
