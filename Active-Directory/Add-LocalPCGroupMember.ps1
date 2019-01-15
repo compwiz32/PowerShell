@@ -1,47 +1,46 @@
 Function Add-LocalPCGroupMember {
 <#
-.SYNOPSIS
-Adds an AD user or an AD group to local user group on a client PC or server.
+    .SYNOPSIS
+        Adds an AD user or an AD group to local user group on a client PC or server.
 
-.DESCRIPTION
-Adds an AD user or an AD group to a local user group on a client PC or server. This cmdlet does not create new
-Local PC groups, it only adds users or groups to existing Local PC groups already created.
+    .DESCRIPTION
+        Adds an AD user or an AD group to a local user group on a client PC or server. This cmdlet does not create new
+        Local PC groups, it only adds users or groups to existing Local PC groups already created.
 
-.PARAMETER ComputerName
-Specifies a computer to add the users to. Multiple computers can be specificed with commas and single quotes
-(-Computer 'Server01','Server02')
+    .PARAMETER ComputerName
+        Specifies a computer to add the users to. Multiple computers can be specificed with commas and single quotes
+        (-Computer 'Server01','Server02')
 
-.PARAMETER Account
-The SamAccount name of an AD User or AD Group that will be added to a local group on the local PC.
+    .PARAMETER Account
+        The SamAccount name of an AD User or AD Group that will be added to a local group on the local PC.
 
-.PARAMETER Group
-The name of the LocalGroup on target computer that the account will be added to. Valid choices are
-Administrators,'Remote Desktop Users','Remote Management Users', 'Users' and 'Event Log Readers'.
-If no choice is made, the default will be Administrators
+    .PARAMETER Group
+        The name of the LocalGroup on target computer that the account will be added to. Valid choices are
+        Administrators,'Remote Desktop Users','Remote Management Users', 'Users' and 'Event Log Readers'.
+        If no choice is made, the default will be Administrators
 
-.EXAMPLE
-Add-LocalPCGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
+    .EXAMPLE
+        Add-LocalPCGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
 
-Description:
-Will add the account named Michael_Kanakos to the local Administrators group on the computer named Server01
+        Description:
+        Will add the account named Michael_Kanakos to the local Administrators group on the computer named Server01
 
-.EXAMPLE
-Add-LocalPCGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
+    .EXAMPLE
+        Add-LocalPCGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
 
-Description:
-Will add the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
+        Description:
+        Will add the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
 
 
-.NOTES
-Name       : Add-LocalPCGroupMember.ps1
-Author     : Mike Kanakos
-Version    : 1.0.9
-DateCreated: 2018-12-03
-DateUpdated: 2019-01-15
+    .NOTES
+        Name       : Add-LocalPCGroupMember.ps1
+        Author     : Mike Kanakos
+        Version    : 1.0.9
+        DateCreated: 2018-12-03
+        DateUpdated: 2019-01-15
 
-.LINK
-https://github.com/compwiz32/PowerShell
-
+    .LINK
+        https://github.com/compwiz32/PowerShell
 
 #>
 
