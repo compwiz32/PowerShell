@@ -40,7 +40,7 @@ Function Get-RecentPatchInfo {
      InstallDate        : 12/20/2018 12:00:00 AM
      LastRestartTime    : 12/20/2018 12:26:11 AM
 
-    .Example
+     .Example
      Get-RecentPatchInfo -computername DC01, DC02 | format-table
 
      Returns last installed patch and reboot info for the computers named DC01 and DC02 and formats the out as
