@@ -1,5 +1,4 @@
 ﻿Function Get-EmployeeInfo {
-
 <#
     .Synopsis
         Returns a customized list of Active Directory account information for a single user
