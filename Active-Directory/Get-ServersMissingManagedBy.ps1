@@ -1,5 +1,5 @@
 function Get-ServersMissingManagedBy {
-<#
+    <#
     .Synopsis
         Returns a list of enabled servers that do not have a value in the "ManagedBy" field in Active Directory
 
@@ -21,11 +21,15 @@ function Get-ServersMissingManagedBy {
         NAME: Get-ServersMissingManagedBy
         AUTHOR: Mike Kanakos
         LASTEDIT: 2019-01-15
-#>
 
-[CmdletBinding()]
+    .Link
+        https://github.com/compwiz32/PowerShell
 
-Get-adcomputer -filter 'OperatingSystem -like "*server*" '  -prop operatingsystem, description, managedby, memberof |
-Where-Object {($_.enabled -eq $true) -and ($_.managedby -eq $null) }
+    #>
+
+    [CmdletBinding()]
+
+    Get-adcomputer -filter 'OperatingSystem -like "*server*" '  -prop operatingsystem, description, managedby, memberof |
+    Where-Object {($_.enabled -eq $true) -and ($_.managedby -eq $null) }
 
 } #End of Function
