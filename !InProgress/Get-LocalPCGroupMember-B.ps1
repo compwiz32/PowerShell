@@ -46,7 +46,7 @@ DateCreated: 2019-01-09
 DateUpdated:
 
 .LINK
-https://https://github.com/compwiz32/PowerShell
+    https://github.com/compwiz32/PowerShell
 
 
 #>
