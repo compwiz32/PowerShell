@@ -40,9 +40,9 @@
         The employee account to lookup in Active Directory
 
     .Notes
-        NAME:        Add-LocalPCGroupMember.ps1
+        NAME:        Add-EmployeeInfo.ps1
         AUTHOR:      Mike Kanakos
-        VERSION:     1.0.9
+        VERSION:     1.0.2
         DateCreated: 2018-04-10
         DateUpdated: 2019-01-15
 
