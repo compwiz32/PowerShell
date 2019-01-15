@@ -18,6 +18,9 @@ function Get-ServersNotInPatchGroups {
       NAME: Get-ServersNotInPatchGroups
       AUTHOR: Mike Kanakos
       LASTEDIT: 2019-01-15
+
+   .Link
+        https://github.com/compwiz32/PowerShell
 #>
 
 Get-adcomputer -filter 'OperatingSystem -like "*server*"' -prop operatingsystem, description, managedby, memberof | `
