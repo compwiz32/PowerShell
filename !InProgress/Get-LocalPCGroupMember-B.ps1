@@ -1,42 +1,49 @@
-Function Add-LocalPCGroupMember {
+Function Get-LocalPCGroupMember {
 <#
 .SYNOPSIS
-Adds an AD user or an AD group to local user group on a client PC or server.
+Retrieves the local group membership for a particular group.
 
 .DESCRIPTION
-Adds an AD user or an AD group to a local user group on a client PC or server. This cmdlet does not create new
-Local PC groups, it only adds users or groups to existing Local PC groups already created.
+Retrieves the local group membership for a particular group. The computer and group can be specified.
+If no computername is specified then the local machine will be queried. If no group  is specified
+then the Administrators group will be queried.
 
 .PARAMETER ComputerName
-Specifies a computer to add the users to. Multiple computers can be specificed with commas and single quotes
-(-Computer 'Server01','Server02')
-
-.PARAMETER Account
-The SamAccount name of an AD User or AD Group that will be added to a local group on the local PC.
+Specifies a computer to get group members from. Multiple computers can be specificed with commas and single quotes
+(-Computer 'Server01','Server02'). The default is "localhost" if not entered.
 
 .PARAMETER Group
-The name of the LocalGroup on target computer that the account will be added to. Valid choices are Administrators or
-RemoteDesktopUsers only. If no choice is made, the default will be Administrators
+The name of the LocalGroup on target computer that will queried. Valid choices are
+Administrators,'Remote Desktop Users','Remote Management Users', 'Users' and 'Event Log Readers'.
+If no choice is made, the default will be Administrators
 
 .EXAMPLE
-Add-LocalPCGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
+Get-LocalPCGroupMember -Computer Server01
 
 Description:
-Will add the account named Michael_Kanakos to the local Administrators group on the computer named Server01
+Will retrieve the members of Administrators group on computer named Server01. The administrators group is
+retreived since no group was specified.
+
 
 .EXAMPLE
-Add-LocalPCGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group RemoteDesktopUsers
+Get-LocalPCGroupMember -Computer Server01 -Group 'Remote Management Users'
 
 Description:
-Will add the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
+Will retrieve the members of Remote Management Users group on computer named Server01.
+
+.EXAMPLE
+Get-LocalPCGroupMember -Computer 'Server01','Server02' -Group 'Remote Desktop Users'
+
+Description:
+Will retrieve the members of 'Remote Desktop Users' from computers named Server01 and Server02.
 
 
 .NOTES
-Name       : Add-LocalPCGroupMember.ps1
+Name       : Get-LocalPCGroupMember.ps1
 Author     : Mike Kanakos
-Version    : 1.0.7
-DateCreated: 2018-12-03
-DateUpdated: 2019-01-07
+Version    : 1.0.1
+DateCreated: 2019-01-09
+DateUpdated:
 
 .LINK
 https://https://github.com/compwiz32/PowerShell
@@ -46,15 +53,11 @@ https://https://github.com/compwiz32/PowerShell
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
-    [Parameter(Mandatory=$True,Position=0)]
-    [string]
-    $Account,
+    [Parameter(Mandatory=$true,Position=0)]
+    [string[]]
+    $ComputerName = . ,
 
     [Parameter(Mandatory=$true,Position=1)]
-    [string[]]
-    $ComputerName,
-
-    [Parameter(Mandatory=$true,Position=2)]
     [ValidateSet('Administrators','Remote Desktop Users','Remote Management Users', 'Users', 'Event Log Readers')]
     [String]
     $Group = 'Administrators'
