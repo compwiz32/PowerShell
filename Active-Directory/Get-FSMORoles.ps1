@@ -87,9 +87,5 @@
     #Display results
     $Array
 
-
 }
-# Mike Kanakos - 2016-02-04
-#
 
-# Assign .net connections to variables
