@@ -27,9 +27,30 @@ function Get-ServersMissingManagedBy {
 
     #>
 
+    $Params = @{
+        Filter = "OperatingSystem -like '*server*'
+                    -and Enabled -eq 'true'
+                    -and description -notlike '*Failover cluster*'
+                    -and description -notlike '*template*'
+                    -and description -notlike '*inactive*'
+                    "
 
+
+        Properties = 'operatingsystem',
+                     'description',
+                     'managedby',
+                     'memberof'
+                    }
+
+    Get-adcomputer @Params | Where-Object {($_.managedby -eq $null)}
+
+
+    <#
     Get-adcomputer -filter 'OperatingSystem -like "*server*"'  -prop operatingsystem, description, managedby, memberof |
     Where-Object { ($_.enabled -eq $true) -and ($_.description -notlike '*Failover cluster*') -and `
     ($_.description -notlike '*template*') -and ($_.description -notlike '*inactive*') -and ($_.managedby -eq $null) }
+    #>
+
+    #enabled -eq 'true' -and description -notlike '*template*|*inactive' -and managedby -eq 'null'"
 
 } #End of Function
