@@ -27,9 +27,9 @@ function Get-ServersMissingManagedBy {
 
     #>
 
-    [CmdletBinding()]
 
     Get-adcomputer -filter 'OperatingSystem -like "*server*" '  -prop operatingsystem, description, managedby, memberof |
-    Where-Object {($_.enabled -eq $true) -and ($_.managedby -eq $null) }
+    Where-Object { ($_.enabled -eq $true) -and ($_.description -notlike '*Failover cluster*') -and `
+    ($_.description -notlike '*template*') -and ($_.description -notlike '*inactive*') -and ($_.managedby -eq $null) }
 
 } #End of Function
