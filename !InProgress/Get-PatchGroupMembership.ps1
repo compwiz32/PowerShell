@@ -17,10 +17,6 @@ Function Get-PatchGroupMembership {
   Get-PatchGroupmembership CRD-FS-WP01, SGT-PRT-WP01
 
 
-
- .Parameter drive
-  The drive letter to query. Defaults to system drive (normally c:)
-
  .Parameter computername
   The name of the computer to query. Defaults to local machine.
 
@@ -37,13 +33,12 @@ Function Get-PatchGroupMembership {
     Param(
         [Parameter(Mandatory = $True, Position = 1)]
         [string]$ComputerName
-
-    )
+        )
 
     #Main part of function
 
-    Get-ADPrincipalGroupMembership(Get-ADComputer $ComputerName) | get-adgroup -Property description | Select-Object Name, Description | `
-        Where-Object { $_.name -like "patch*" } | Sort-Object name
+    Get-ADPrincipalGroupMembership (Get-ADComputer $ComputerName) | get-adgroup -Property description |
+        Select-Object Name, Description | Where-Object { $_.name -like "patch*" } | Sort-Object name
 
 
 

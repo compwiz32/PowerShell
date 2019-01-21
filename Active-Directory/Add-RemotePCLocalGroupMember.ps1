@@ -1,4 +1,4 @@
-Function Add-LocalPCGroupMember {
+Function Add-RemotePCLocalGroupMember {
 <#
     .SYNOPSIS
         Adds an AD user or an AD group to local user group on a client PC or server.
@@ -20,24 +20,24 @@ Function Add-LocalPCGroupMember {
         If no choice is made, the default will be Administrators
 
     .EXAMPLE
-        Add-LocalPCGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
+        Add-RemotePCLocalGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
 
         Description:
         Will add the account named Michael_Kanakos to the local Administrators group on the computer named Server01
 
     .EXAMPLE
-        Add-LocalPCGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
+        Add-RemotePCLocalGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
 
         Description:
         Will add the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
 
 
     .NOTES
-        Name       : Add-LocalPCGroupMember.ps1
+        Name       : Add-RemotePCLocalGroupMember.ps1
         Author     : Mike Kanakos
-        Version    : 1.0.9
+        Version    : 2.0.1
         DateCreated: 2018-12-03
-        DateUpdated: 2019-01-15
+        DateUpdated: 2019-01-121
 
     .LINK
         https://github.com/compwiz32/PowerShell
