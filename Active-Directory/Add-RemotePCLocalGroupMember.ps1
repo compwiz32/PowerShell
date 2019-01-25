@@ -37,7 +37,7 @@ Function Add-RemotePCLocalGroupMember {
         Author     : Mike Kanakos
         Version    : 2.0.1
         DateCreated: 2018-12-03
-        DateUpdated: 2019-01-121
+        DateUpdated: 2019-01-21
 
     .LINK
         https://github.com/compwiz32/PowerShell
