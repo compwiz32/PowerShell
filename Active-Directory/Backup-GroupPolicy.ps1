@@ -47,9 +47,9 @@ function Backup-GroupPolicy {
     .NOTES
     Name       : Backup-GroupPolicy.ps1
     Author     : Mike Kanakos
-    Version    : 1.0.3
+    Version    : 1.1.0
     DateCreated: 2018-12-19
-    DateUpdated: 2019-01-05
+    DateUpdated: 2019-01-25
 
     .LINK
     https://github.com/compwiz32/PowerShell
@@ -82,24 +82,28 @@ param (
 
         New-item $UpdatedPath -ItemType directory | Out-Null
 
-        Write-Host "GPO's will be backed up to $UpdatedPath"
+        Write-Host "GPO's will be backed up to $UpdatedPath" -backgroundcolor white -foregroundColor red
     } #end of begin block
 
     process {
 
         ForEach ($GPO in $GPOInfo) {
 
+            Write-Host "Backing up GPO named: " -foregroundColor Green -nonewline
+            Write-Host $GPO.Displayname -foregroundColor White
+
             #Assign temp variables for various parts of GPO data
-            Write-Host "Backing up GPO named: " $GPO.Displayname
             $BackupInfo = Backup-GPO -Name $GPO.DisplayName -Domain $Domain -path $UpdatedPath -Server $Server
             $GpoBackupID = $BackupInfo.ID.Guid
             $GpoGuid = $BackupInfo.GPOID.Guid
             $GpoName = $BackupInfo.DisplayName
             $CurrentFolderName = $UpdatedPath + "\" + "{"+ $GpoBackupID + "}"
-            $NewFolderName = $UpdatedPath + "\" + $GPOName
+            $NewFolderName = $UpdatedPath + "\" + $GPOName + "___" + "{"+ $GpoBackupID + "}"
+            $ConsoleOutput = $GPOName + "___" + "{"+ $GpoBackupID + "}"
 
-            #rename the newly created GPO backup sub folder from it's GPO ID to the GPO Displayname
+            #rename the newly created GPO backup sub folder from it's GPO ID to GPO Displayname + GUID
             rename-item $CurrentFolderName -newname $NewFolderName
+
 
         } #end ForEach loop
 
