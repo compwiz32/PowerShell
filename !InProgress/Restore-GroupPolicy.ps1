@@ -7,9 +7,16 @@ function Restore-GroupPolicy {
     .DESCRIPTION
     Restores a Group Policy from a previous GPO backup.
 
-    *** This function is intended to be used with the backups created by Backup-GroupPolicy cmdlet written by Mike
+    This function is intended to be used with backups created by Backup-GroupPolicy cmdlet written by Mike
     Kanakos. The built-in Restore-GPO cmdlet should be used for restoring backups made from the built-in cmdlet
     named Backup-GPO from Microsoft.
+
+    .PARAMETER Name
+    Specifies the folder of the GPO you would like to restore. The folders created by the Backup-GrouPolicy cmdlet will
+    be a combination of the Name of the GPo and the BackupID guid of the GPO.
+
+    An example of a valid folder name would be:
+    Default Domain Controllers Policy___{697ebe7d-019d-46e6-91c2-c5c85ce3f160}
 
 
     .PARAMETER Path
@@ -26,8 +33,12 @@ function Restore-GroupPolicy {
     Specifies the domain to look for Group Policies. This is auto populated with the domain info from the PC running
     the cmdlet.
 
+
     .PARAMETER Server
-    Specifies the Domain Controller to query for group Policies to backup
+    Specifies the name of the domain controller that is contacted to complete the operation.
+    You can specify either the fully qualified domain name (FQDN) or the host name. If you do not specify the name
+    by using the Server parameter, the primary domain controller (PDC) emulator is contacted.
+
 
     .EXAMPLE
     Backup-GroupPolicy -path C:\Backup
@@ -45,11 +56,11 @@ function Restore-GroupPolicy {
 
 
     .NOTES
-    Name       : Backup-GroupPolicy.ps1
+    Name       : Restore-GroupPolicy.ps1
     Author     : Mike Kanakos
-    Version    : 1.0.3
-    DateCreated: 2018-12-19
-    DateUpdated: 2019-01-05
+    Version    : 1.0.1
+    DateCreated: 2019-01-25
+    DateUpdated: 2019-01-25
 
     .LINK
     https://github.com/compwiz32/PowerShell
@@ -57,7 +68,13 @@ function Restore-GroupPolicy {
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 param (
-    [Parameter(Mandatory=$True,Position=0)]
+    [Parameter(Mandatory=$True,Position=0,
+    HelpMessage="Enter the folder name of the GPO that needs to be restored")]
+    [alias("GroupPolicy","GPO","FolderName")]
+    [string]
+    $Name,
+
+    [Parameter()]
     [string]
     $Path,
 
@@ -69,6 +86,31 @@ param (
     [string]
     $Server
     )
+
+    try{
+        $Connection = test-path $path
+
+        If(!($Connection)) {
+          Write-Warning "Folder " $path + "\" + $Name  "is not reachable!"
+          } #end if
+
+        Else {}
+
+       #Create a temp variable to hold just the GUID of part of folder name
+       $TempFolderName = $Name -replace '^.+_{3}'
+
+       #Rename the specified GPO folder to just the GUID
+       Rename-item  $Path + "\" + $Name -newname $path + "\" + $TempFolderName
+
+       Restore-GPO -Name $Name -Path $path -Domain $Domain -Server $Server
+
+       #Rename the folder from a GUID back to the original folder name
+       Rename-item  $Path + "\" + $TempFolderName -newname $path + "\" + $Name
+
+    }
+
+
+
 
     begin {
 
