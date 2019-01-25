@@ -23,7 +23,7 @@
         EmployeeID   : 123456
         UserName     : Tom_Brady
         DisplayNme   : Brady, Tom
-        Tom_Brady@SUPERWORLDPOWER.COM
+        EmailAddress : Tom_Brady@NWTraders.msft
         OfficePhone  : +1 919-555-1212
         MobilePhone  : +1 631-555-1212
 
