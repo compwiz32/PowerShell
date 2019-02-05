@@ -1,14 +1,15 @@
 function Get-ServersNotInPatchGroups {
 <#
    .Synopsis
-      Returns a list of servers that are not a member of any Lord patch groups
+      Returns a list of servers that are not a member of any groups that contain the word "Patch"
 
    .Description
       Returns a list of servers that are not a member of any groups that contain the word "Patch"
 
    .Example
       Get-ServersNotInPatchGroups
-      Returns a list of servers that are not a member of any groups that contain the word "Patch"
+      Returns a list of servers that are not a member of any groups that contain the word "Patch" in a list format
+      with all default fields displayed
 
       Example Output:
 
