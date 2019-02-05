@@ -8,8 +8,9 @@ function Get-ServersNotInPatchGroups {
 
    .Example
       Get-ServersNotInPatchGroups
-      Returns a list of servers that are not a member of any groups that contain the word "Patch" in a list format
-      with all default fields displayed
+      Returns a list of servers that are not a member of any groups that contain the word "Patch" and are also
+      enabled and do not have the words "Failover cluster", "cluster virtual", template or inactive in the description
+      field.
 
       Example Output:
 
@@ -30,9 +31,11 @@ function Get-ServersNotInPatchGroups {
       UserPrincipalName :
 
    .Example
-      Get-ServersNotInPatchGroups | select name, description, managedby, memberof | sort name | ft -AutoSize
+      Get-ServersNotInPatchGroups | select-object name, description, managedby, memberof | sort-object name | format-table -AutoSize
 
-      Returns a list of servers that are not a member of any Lord patch groups in a table format
+      Returns a list of servers that are not a member of any groups that contain the word "Patch" and are also
+      enabled and do not have the words "Failover cluster", "cluster virtual", template or inactive in the description
+      field. In this example, specific fields have been selected and output is a table format.
 
 
 name            description              managedby                                              memberof
