@@ -14,7 +14,7 @@ function Get-ServersNotInPatchGroups {
 
       Example Output:
 
-      PS C:\Scripts\Git-Repo\powershell> Get-ServersNotInPatchGroups
+      Get-ServersNotInPatchGroups
 
       Description       : Domain Controller
       DistinguishedName : CN=DC01,OU=Domain Controllers,DC=NWTraders,DC=MSFT
@@ -46,7 +46,7 @@ DC01            Domain Controller        CN=Kanakos\, Michael,OU=Users,DC=NWTrad
       NAME: Get-ServersNotInPatchGroups
       AUTHOR: Mike Kanakos
       LASTEDIT: 2019-02-05
-      version: 1.4.0
+      version: 1.4.3
 
    .Link
         https://github.com/compwiz32/PowerShell
