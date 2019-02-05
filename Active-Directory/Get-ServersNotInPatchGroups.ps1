@@ -1,23 +1,48 @@
 function Get-ServersNotInPatchGroups {
 <#
    .Synopsis
-      Returns a list of servers not a member of any Lord patch groups
+      Returns a list of servers that are not a member of any Lord patch groups
 
    .Description
-      Returns a list of servers and their description that are assigned to a user
+      Returns a list of servers that are not a member of any groups that contain the word "Patch"
 
    .Example
-      Get-ServersAssignedtoUser
-      Returns a list of servers assigned to the current logged in user
+      Get-ServersNotInPatchGroups
+      Returns a list of servers that are not a member of any groups that contain the word "Patch"
+
+      Example Output:
+
+      PS C:\Scripts\Git-Repo\powershell> Get-ServersNotInPatchGroups
+
+      Description       : Domain Controller
+      DistinguishedName : CN=DC01,OU=Domain Controllers,DC=NWTraders,DC=MSFT
+      DNSHostName       : DC01.NWTraders.MSFT
+      Enabled           : True
+      ManagedBy         : CN=Kanakos\, Michael,OU=Users,DC=NWTraders,DC=MSFT
+      MemberOf          : {}
+      Name              : DC01
+      ObjectClass       : computer
+      ObjectGUID        : ba5ef2a8-2118-421c-a7e4-a826bb5f4866
+      OperatingSystem   : Windows Server 2012 R2 Datacenter
+      SamAccountName    : DC01$
+      SID               : S-1-5-21-3400731359-123456789-3499617246-289124
+      UserPrincipalName :
 
    .Example
-      Get-ServersAssignedtoUser -UserName Michael_Kanakos
-      Returns a list of servers assigned to the value entered for the -User parameter
+      Get-ServersNotInPatchGroups | select name, description, managedby, memberof | sort name | ft -AutoSize
+
+      Returns a list of servers that are not a member of any Lord patch groups in a table format
+
+
+name            description              managedby                                              memberof
+----            -----------              ---------                                              --------
+DC01            Domain Controller        CN=Kanakos\, Michael,OU=Users,DC=NWTraders,DC=MSFT     {}
 
    .Notes
       NAME: Get-ServersNotInPatchGroups
       AUTHOR: Mike Kanakos
-      LASTEDIT: 2019-01-15
+      LASTEDIT: 2019-02-05
+      version: 1.4.0
 
    .Link
         https://github.com/compwiz32/PowerShell
