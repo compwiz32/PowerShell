@@ -23,7 +23,22 @@ function Get-ServersNotInPatchGroups {
         https://github.com/compwiz32/PowerShell
 #>
 
-Get-adcomputer -filter 'OperatingSystem -like "*server*"' -prop operatingsystem, description, managedby, memberof | `
-Where-Object {[String] $_.memberof -notlike  "*patch*" -and $_.enabled -eq $true }
+$Params = @{
+   Filter = "OperatingSystem -like '*server*'
+               -and Enabled -eq 'true'
+               -and description -notlike '*Failover cluster*'
+               -and description -notlike '*cluster virtual*'
+               -and description -notlike '*template*'
+               -and description -notlike '*inactive*'
+               "
+
+
+   Properties = 'operatingsystem',
+                'description',
+                'managedby',
+                'memberof'
+   }
+
+Get-adcomputer @params | Where-Object {[String] $_.memberof -notlike  "*patch*" -and $_.enabled -eq $true }
 }
 
