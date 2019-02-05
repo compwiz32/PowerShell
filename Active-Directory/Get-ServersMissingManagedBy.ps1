@@ -31,6 +31,7 @@ function Get-ServersMissingManagedBy {
         Filter = "OperatingSystem -like '*server*'
                     -and Enabled -eq 'true'
                     -and description -notlike '*Failover cluster*'
+                    -and description -notlike '*cluster virtual*'
                     -and description -notlike '*template*'
                     -and description -notlike '*inactive*'
                     "
