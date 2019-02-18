@@ -86,9 +86,9 @@ Param(
             } #end If
 
             Else {
-                Get-WinEvent -ComputerName $computer -FilterHashtable @{logname = 'System'; id = 1074}  |
+                Get-WinEvent -ComputerName $computer -FilterHashtable @{logname = 'System'; id = 1074,6006,6008}  |
                     ForEach-Object {
-                        $EventData = New-Object PSObject | Select-Object Date, User, Action, Process, Reason, ReasonCode, Comment, Computer
+                        $EventData = New-Object PSObject | Select-Object Date, EventID, User, Action, Process, Reason, ReasonCode, Comment, Computer
                         $EventData.Date = $_.TimeCreated
                         $EventData.User = $_.Properties[6].Value
                         $EventData.Process = $_.Properties[0].Value
@@ -97,7 +97,8 @@ Param(
                         $EventData.ReasonCode = $_.Properties[3].Value
                         $EventData.Comment = $_.Properties[5].Value
                         $EventData.Computer = $Computer
-                        $EventData} | Select-Object Computer, Date, Action, Reason, User, Process, Comment
+                        $EventData.EventID = $_.id
+                        $EventData} | Select-Object Computer, Date, EventID, Action, Reason, User, Process, Comment
                 } #End Else
         } #Foreach Computer Loop
     } #end Process block
