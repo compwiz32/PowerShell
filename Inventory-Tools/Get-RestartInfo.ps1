@@ -98,7 +98,7 @@ Param(
                         $EventData.Comment = $_.Properties[5].Value
                         $EventData.Computer = $Computer
                         $EventData.EventID = $_.id
-                        $EventData} | Select-Object Computer, Date, EventID, Action, Reason, User, Process, Comment
+                        $EventData} | Select-Object Computer, Date, EventID, Action, User, Reason, Comment
                 } #End Else
         } #Foreach Computer Loop
     } #end Process block
