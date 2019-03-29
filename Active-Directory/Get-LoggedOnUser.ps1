@@ -1,27 +1,25 @@
-function Get-LoggedOnUser
-{
+function Get-LoggedOnUser {
 <#
-.Synopsis
-Queries a computer to check for interactive sessions / users logged into the computer
+.SYNOPSIS
+   Queries a computer to check for interactive sessions / users logged into the computer
 
 .DESCRIPTION
-returns a list of logged on users and status info about each logged on user.
-This script takes the output from the quser program and parses thre data into PowerShell objects
+    returns a list of logged on users and status info about each logged on user.
+    This script takes the output from the quser program and parses thre data into PowerShell objects
 
 .NOTES
-Name: Get-LoggedOnUser
-Author: Jaap Brasser
-Version: 1.2.1
-DateUpdated: 2015-09-23
+    Name: Get-LoggedOnUser
+    Author: Mike Kanakos
+    Original Author: Jaap Brasser (http://www.jaapbrasser.com)
+    Version: 1.0.0
+    DateUpdated: 2015-09-23
 
 .LINK
-http://www.jaapbrasser.com
+    http://www.github.com/compwiz32/Powershell
 
 .EXAMPLE
-Get-LoggedOnUser -ComputerName server01
-Displays the session information for server01
-
-    Sample Output:
+    Get-LoggedOnUser -ComputerName server01
+    Displays the session information for server01
 
     UserName     : derek_jeter
     ComputerName : server01
@@ -35,12 +33,10 @@ Displays the session information for server01
 
 
 .EXAMPLE
-Get-LoggedOnUser -ComputerName server01,server02
+    Get-LoggedOnUser -ComputerName server01,server02
 
-Description:
-Displays the session information for server01 and server02
-
-    Sample Output
+    Description:
+    Displays the session information for server01 and server02
 
     UserName     : derek_jeter
     ComputerName : server01
@@ -70,15 +66,11 @@ Displays the session information for server01 and server02
     Error        :
 
 
-
 .EXAMPLE
-Get-LoggedOnUser -computername server01, server02 | format-table
+    Get-LoggedOnUser -computername server01, server02 | format-table
 
-Description:
-Displays the session information on server01 and server02 and displays the output in a table view
-
-
-    Sample Output
+    Description:
+    Displays the session information on server01 and server02 and displays the output in a table view
 
     UserName          ComputerName SessionName Id State  IdleTime LogonTime          Error
     --------          ------------ ----------- -- -----  -------- ---------          -----
@@ -88,7 +80,7 @@ Displays the session information on server01 and server02 and displays the outpu
 
 
 .PARAMETER ComputerName
-The string or array of string for which a query will be executed
+    The string or array of string for which a query will be executed
 #>
 
 param(
