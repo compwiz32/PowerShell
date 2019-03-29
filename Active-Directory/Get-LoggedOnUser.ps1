@@ -15,7 +15,7 @@ function Get-LoggedOnUser {
     DateUpdated: 2015-09-23
 
 .LINK
-    http://www.github.com/compwiz32/Powershell
+    https://www.github.com/compwiz32/Powershell
 
 .EXAMPLE
     Get-LoggedOnUser -ComputerName server01
