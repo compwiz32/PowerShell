@@ -18,20 +18,74 @@ DateUpdated: 2015-09-23
 http://www.jaapbrasser.com
 
 .EXAMPLE
+Get-LoggedOnUser -ComputerName server01
+Displays the session information for server01
+
+    Sample Output:
+
+    UserName     : derek_jeter
+    ComputerName : server01
+    SessionName  :
+    Id           : 2
+    State        : Disc
+    IdleTime     : 1+02:21
+    LogonTime    : 3/28/2019 10:53 AM
+    Error        :
+
+
+
+.EXAMPLE
 Get-LoggedOnUser -ComputerName server01,server02
-Displays the session information for server01 and server02
-
-.EXAMPLE
-.\Get-LoggedOnUser.ps1 -ComputerName server01,server02
 
 Description:
 Displays the session information for server01 and server02
 
+    Sample Output
+
+    UserName     : derek_jeter
+    ComputerName : server01
+    SessionName  :
+    Id           : 2
+    State        : Disc
+    IdleTime     : 1+02:23
+    LogonTime    : 3/28/2019 10:53 AM
+    Error        :
+
+    UserName     : tom_brady
+    ComputerName : server02
+    SessionName  : rdp-tcp#21
+    Id           : 2
+    State        : Active
+    IdleTime     : 9
+    LogonTime    : 3/19/2019 11:14 AM
+    Error        :
+
+    UserName     : derek_jeter
+    ComputerName : server02
+    SessionName  :
+    Id           : 4
+    State        : Disc
+    IdleTime     : 8
+    LogonTime    : 3/29/2019 10:22 AM
+    Error        :
+
+
+
 .EXAMPLE
-'server01','server02' | .\Get-LoggedOnUser.ps1
+Get-LoggedOnUser -computername server01, server02 | format-table
 
 Description:
-Displays the session information on server01 and server02. Uses an alternate method to input the data
+Displays the session information on server01 and server02 and displays the output in a table view
+
+
+    Sample Output
+
+    UserName          ComputerName SessionName Id State  IdleTime LogonTime          Error
+    --------          ------------ ----------- -- -----  -------- ---------          -----
+    derek_jeter       server01                  2  Disc   1+02:25  3/28/2019 10:53 AM
+    tom_brady         server02      rdp-tcp#21  2  Active 12       3/19/2019 11:14 AM
+    derek_jeter       server02                  4  Disc   10       3/29/2019 10:22 AM
+
 
 .PARAMETER ComputerName
 The string or array of string for which a query will be executed
