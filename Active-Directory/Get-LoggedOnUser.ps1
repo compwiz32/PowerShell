@@ -5,10 +5,10 @@ function Get-LoggedOnUser
 Queries a computer to check for interactive sessions / users logged into the computer
 
 .DESCRIPTION
-Script returns a list of logged on users and status info about each logged on user.
-This script takes the output from the quser program and parses this to PowerShell objects
+returns a list of logged on users and status info about each logged on user.
+This script takes the output from the quser program and parses thre data into PowerShell objects
 
-.NOTES   
+.NOTES
 Name: Get-LoggedOnUser
 Author: Jaap Brasser
 Version: 1.2.1
@@ -18,23 +18,27 @@ DateUpdated: 2015-09-23
 http://www.jaapbrasser.com
 
 .EXAMPLE
+Get-LoggedOnUser -ComputerName server01,server02
+Displays the session information for server01 and server02
+
+.EXAMPLE
 .\Get-LoggedOnUser.ps1 -ComputerName server01,server02
 
 Description:
-Will display the session information on server01 and server02
+Displays the session information for server01 and server02
 
 .EXAMPLE
 'server01','server02' | .\Get-LoggedOnUser.ps1
 
 Description:
-Will display the session information on server01 and server02
+Displays the session information on server01 and server02. Uses an alternate method to input the data
 
 .PARAMETER ComputerName
 The string or array of string for which a query will be executed
 #>
 
 param(
-    [CmdletBinding()] 
+    [CmdletBinding()]
     [Parameter(ValueFromPipeline=$true,
                ValueFromPipelineByPropertyName=$true)]
     [string[]]$ComputerName = 'localhost'
