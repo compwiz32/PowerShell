@@ -25,7 +25,7 @@
         DateCreated: 2019-05-14
         DateUpdated: 2019-05-14
 
-        v1.0.0 - initial fucntion creation. Conversion of a flat script to a function and modernizing of code 
+        v1.0.0 - initial function creation. Conversion of a flat script to a function and modernizing of code 
                  (try/catch, help, loop, parameters, etc. )
 
     .Link
