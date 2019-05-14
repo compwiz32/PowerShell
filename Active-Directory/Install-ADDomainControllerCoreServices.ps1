@@ -69,7 +69,7 @@ $online = Test-Connection -ComputerName $Computer -Count 2 -Quiet
         }#foreach
         
     Write-Host "Updating PowerShell help files" -foregroundcolor Green
-    invoke-command -ComputerName $dc -ScriptBlock {update-help}
+    invoke-command -Computer $computer -ScriptBlock {update-help}
 
     } #end if
 
