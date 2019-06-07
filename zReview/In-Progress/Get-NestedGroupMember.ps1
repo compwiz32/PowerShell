@@ -1,40 +1,30 @@
-﻿function Get-NestedGroupMember 
+﻿function Get-NestedGroupMember {
 
-  {
-
-  [CmdletBinding()] 
-  param 
+  [CmdletBinding()]
+  param
   (
-    [Parameter(Mandatory)] 
-    [string]$Group 
+    [Parameter(Mandatory)]
+    [string]$Group
   )
 
-  
-  ## Find all members  in the group specified 
-  $members = Get-ADGroupMember -Identity $Group 
+
+  ## Find all members  in the group specified
+  $members = Get-ADGroupMember -Identity $Group
 
   foreach ($member in $members)
 
-  {
+    {
+    ## If any member in  that group is another group just call this function again
 
-  ## If any member in  that group is another group just call this function again 
+    if ($member.objectClass -eq 'group'){
+      Get-NestedGroupMember -Group $member.Name
+      }
 
-  if ($member.objectClass -eq 'group')
+      ## otherwise, just  output the non-group object (probably a user account)
+    else {
+      $member.Name
+      }
 
-  {
-
-  Get-NestedGroupMember -Group $member.Name
-
-  }
-
-  else ## otherwise, just  output the non-group object (probably a user account) 
-
-  {
-
-  $member.Name  
-
-  }
-
-  }
+    }
 
   }
