@@ -32,5 +32,3 @@ Foreach($Computer in $Servers){
 }#Foreach Computer Loop
 
 [pscustomobject]$Results | Select-Object Computer, Status, DeviceName, DriverVersion
-
-
