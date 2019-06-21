@@ -82,19 +82,37 @@ function Get-RemoteServerFileCount {
     }
     
     process {
-    
-        # $shares = net view \\$ComputerName | Select-Object -Skip 7 | ?{$_ -match 'disk*'} | %{$_ -match '^(.+?)\s+Disk*'|out-null;$matches[1]}
-        $shares = Get-WmiObject -Class Win32_Share -ComputerName $ComputerName -Filter "NOT name LIKE '%$%'"
 
+        try {
         
-        ForEach ($share in $shares){
-                        
-            $Results = Get-ChildItem -Path \\$($ComputerName)\$($share.name) -recurse | Measure-Object -property length -sum | Select-Object Count, ({N = 'SizeinGB';E = 'Sum'}/1gb)
-            $Results
-        }
+            $shares = Get-WmiObject -Class Win32_Share -ComputerName $ComputerName -Filter "NOT name LIKE '%$%'"
+            $list = [System.Collections.Generic.List[psobject]]::new()
+        
+            ForEach ($share in $shares){
+            
+                $path = "\\$($ComputerName)\$($share.name)"
+                
+                Write-Host "Counting # of files in: " -foregroundColor Green -nonewline
+                Write-Host $path -foregroundColor White
 
-    }
+                $Results = Get-ChildItem -Path $path -recurse | Measure-Object -property length -sum | Select-Object Count, @{n='SizeInMB';e={([math]::Round(($_.Sum / 1MB),2))}}
+                $list.add($Results)
+            
+            } #end Foreach
+
+            $list
+
+        } #end try
+
+        catch {
+
+            Write-Warning "Permissions issue at $using:path is preventing an accurate count to occur"
+            
+        } #end catch
     
+    } #end process
+
+      
     end {
         
     }
