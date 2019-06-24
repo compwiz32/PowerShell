@@ -15,53 +15,54 @@ function Get-RemoteServerFileCount {
 
         This command will return the filecounts from the shares on local machine
 
-        \> Get-RestartInfo -Computername Server01 
+        Get-RemoteServerFileCount
+        Counting # of files in: \\localhost\Temp
+        
+        ComputerName : localhost
+        ShareName    : Temp
+        Count        : 5
+        SizeInMB     : 0.01
+        SizeInGB     : 0
 
-        Computer : localhost
-        Date     : 1/7/2019 5:16:50 PM
-        Action   : shutdown
-        Reason   : No title for this reason could be found
-        User     : NWTRADERS.MSFT\Tom_Brady
-        Process  : C:\WINDOWS\system32\shutdown.exe (CRDNAB-PC06LY52)
-        Comment  :
+        
+    .EXAMPLE
+        Get-RemoteServerFileCount
 
-        Computer : localhost
-        Date     : 1/4/2019 5:36:58 PM
-        Action   : shutdown
-        Reason   : No title for this reason could be found
-        User     : NWTRADERS.MSFT\Tom_Brady
-        Process  : C:\WINDOWS\system32\shutdown.exe (CRDNAB-PC06LY52)
-        Comment  :
+        This command will return the filecounts from the shares on local machine
 
-        Computer : localhost
-        Date     : 1/4/2019 9:10:11 AM
-        Action   : restart
-        Reason   : Operating System: Upgrade (Planned)
-        User     : NT AUTHORITY\SYSTEM
-        Process  : C:\WINDOWS\servicing\TrustedInstaller.exe (CRDNAB-PC06LY52)
-
-
+        Get-RemoteServerFileCount | Format-Table
+        Counting # of files in: \\localhost\Temp
+        
+        ComputerName ShareName                                                             Count SizeInMB SizeInGB
+        ------------ ---------                                                             ----- -------- --------
+        localhost    Temp                                                                      5     0.01        0
 
     .EXAMPLE
-        Get-Restartinfo SERVER01 | select-object Computer, Date, Action, Reason, User
+        Get-RemoteServerFileCount SRV01
 
-        This command will return all the shutdown/restart eventlog info for server named SERVER01
+        This command will return the filecounts from the shares on local machine
 
+        Get-RemoteServerFileCount SRV01 | ft
+        
+        Counting # of files in: \\SRV01\admin
+        Counting # of files in: \\SRV01\Shared
+        Counting # of files in: \\SRV01\Users
 
-        PS C:\Scripts\> Get-RestartInfo SERVER01 | Format-Table -AutoSize
-
-        Computer    Date                  Action  Reason                                  User
-        --------    ----                  ------  ------                                  ----
-        SERVER01    12/15/2018 6:21:45 AM restart No title for this reason could be found NT AUTHORITY\SYSTEM
-        SERVER01    11/17/2018 6:57:53 AM restart No title for this reason could be found NT AUTHORITY\SYSTEM
-        SERVER01    9/29/2018  6:47:50 AM restart No title for this reason could be found NT AUTHORITY\SYSTEM
+        ComputerName ShareName              Count  SizeInMB SizeInGB
+        ------------ ---------              -----  -------- --------
+        SVR01        admin                   2909   4630.99     4.52
+        SVR01        Shared                 69775 130606.77   127.55
+        SVR01        Users                   3638   1171.61     1.14
 
 
     .NOTES
         NAME: Get-Get-RemoteServerFileCount
         AUTHOR: Mike Kanakos
         CREATED: 2019-06-19
-        LASTEDIT: 2019-06-19
+        LASTEDIT: 2019-06-24
+        VERSION: v.0.0.4
+
+        formatted table output with correxct header names
         
     .Link
         https://github.com/compwiz32/PowerShell
@@ -83,34 +84,32 @@ function Get-RemoteServerFileCount {
     
     process {
 
-        try {
-        
-            $shares = Get-WmiObject -Class Win32_Share -ComputerName $ComputerName -Filter "NOT name LIKE '%$%'"
-            $list = [System.Collections.Generic.List[psobject]]::new()
-        
-            ForEach ($share in $shares){
-            
-                $path = "\\$($ComputerName)\$($share.name)"
-                
-                Write-Host "Counting # of files in: " -foregroundColor Green -nonewline
-                Write-Host $path -foregroundColor White
-
-                $Results = Get-ChildItem -Path $path -recurse | Measure-Object -property length -sum | Select-Object Count, @{n='SizeInMB';e={([math]::Round(($_.Sum / 1MB),2))}}
-                $list.add($Results)
-            
-            } #end Foreach
-
-            $list
-
-        } #end try
-
-        catch {
-
-            Write-Warning "Permissions issue at $using:path is preventing an accurate count to occur"
-            
-        } #end catch
+        $shares = Get-WmiObject -Class Win32_Share -ComputerName $ComputerName -Filter "NOT name LIKE '%$%'"
+        $list = [System.Collections.Generic.List[psobject]]::new()
     
-    } #end process
+        ForEach ($share in $shares){
+        
+            $path = "\\$($ComputerName)\$($share.name)"
+            
+            Write-Host "Counting # of files in: " -foregroundColor Green -nonewline
+            Write-Host $path -foregroundColor White
+
+            $Results = Get-ChildItem -Path $path -File -recurse | Measure-Object -property length -sum | 
+                Select-Object @{n='ComputerName';e={"$ComputerName"}},
+                @{n='ShareName';e={$share.name}}, 
+                @{n='FileCount';e='Count'},
+                @{n='SizeInMB';e={[math]::Round(($_.Sum / 1MB),2)}}, 
+                @{n='SizeInGB';e={[math]::Round(($_.Sum / 1GB),2)}}
+                                
+            $list.add($Results)
+        
+        } #end Foreach
+
+        $list
+
+
+    } 
+    
 
       
     end {
