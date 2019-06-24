@@ -15,7 +15,6 @@ function Get-RemoteServerFileCount {
 
         This command will return the filecounts from the shares on local machine
 
-        Get-RemoteServerFileCount
         Counting # of files in: \\localhost\Temp
         
         ComputerName : localhost
@@ -30,20 +29,16 @@ function Get-RemoteServerFileCount {
 
         This command will return the filecounts from the shares on local machine
 
-        Get-RemoteServerFileCount | Format-Table
         Counting # of files in: \\localhost\Temp
         
-        ComputerName ShareName                                                             Count SizeInMB SizeInGB
-        ------------ ---------                                                             ----- -------- --------
-        localhost    Temp                                                                      5     0.01        0
+        ComputerName ShareName             Count SizeInMB SizeInGB
+        ------------ ---------             ----- -------- --------
+        localhost    Temp                      5     0.01        0
 
     .EXAMPLE
-        Get-RemoteServerFileCount -computername SRV01 | format-Table
-
-        This command will return the filecounts from the shares on local machine
-
-        Get-RemoteServerFileCount -computername SRV01 | Format-Table
-        
+        Get-RemoteServerFileCount -computername SRV01 | format-table
+        This command will return the filecounts from the shares on server named SVR01
+     
         Counting # of files in: \\SRV01\admin
         Counting # of files in: \\SRV01\Shared
         Counting # of files in: \\SRV01\Users
@@ -53,6 +48,11 @@ function Get-RemoteServerFileCount {
         SVR01        admin                   2909   4630.99     4.52
         SVR01        Shared                 69775 130606.77   127.55
         SVR01        Users                   3638   1171.61     1.14
+
+    .EXAMPLE
+        Get-RemoteServerFileCount -computername SRV01 | export-csv c:\scripts\output\results.csv -notypeinformation
+
+        Outputs the results of Get-RemoteServerFileCount to a CSV named EXPORT.CSV. This cmd produces no output to the console.
 
 
     .NOTES
