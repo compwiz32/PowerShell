@@ -63,15 +63,26 @@ param (
 
     [Parameter()]
     [string]
-    $Domain = (Get-WmiObject Win32_ComputerSystem).Domain,
+    $Domain = $env:USERDNSDOMAIN,
 
-    [Parameter()]
-    [string]
+    # Specify aliases for the Server parameter and support tab completion for domain controller names.
+    [Parameter(]
+    [Alias("DomainController","DC")]
+    [ArgumentCompleter( {
+        param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+        $possibleValues = @{ Server = (Get-ADDomainController -Filter *).Hostname }
+        if ($fakeBoundParameters.ContainsKey('Type')) { $possibleValues[$fakeBoundParameters.Type] | Where-Object { $_ -like "$wordToComplete*" } }
+        else { $possibleValues.Values | ForEach-Object {$_} }
+    } )]
     $Server
-    )
+
+    ) #End of Parameter Declarations
 
     begin {
 
+        # Get a domain controller if none was specified with by server parameter
+        If (-Not $Server) { $Server = (Get-ADDomainController).Hostname }
+        
         # Get current GPO information
         $GPOInfo = Get-GPO -All -Domain $domain -Server $Server
 
@@ -80,9 +91,9 @@ param (
         $Date = Get-Date -UFormat "%Y-%m-%d"
         $UpdatedPath = "$path\$date"
 
-        New-item $UpdatedPath -ItemType directory | Out-Null
+        If (-Not $UpdatedPath) { New-item $UpdatedPath -ItemType directory | Out-Null }
 
-        Write-Host "GPO's will be backed up to $UpdatedPath" -backgroundcolor white -foregroundColor red
+        Write-Host "GPOs will be backed up to $UpdatedPath" -backgroundcolor white -foregroundColor red
     } #end of begin block
 
     process {
