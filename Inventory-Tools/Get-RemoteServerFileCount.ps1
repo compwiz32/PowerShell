@@ -26,7 +26,7 @@ function Get-RemoteServerFileCount {
 
         
     .EXAMPLE
-        Get-RemoteServerFileCount
+        Get-RemoteServerFileCount | Format-Table
 
         This command will return the filecounts from the shares on local machine
 
@@ -38,11 +38,11 @@ function Get-RemoteServerFileCount {
         localhost    Temp                                                                      5     0.01        0
 
     .EXAMPLE
-        Get-RemoteServerFileCount SRV01
+        Get-RemoteServerFileCount -computername SRV01 | format-Table
 
         This command will return the filecounts from the shares on local machine
 
-        Get-RemoteServerFileCount SRV01 | ft
+        Get-RemoteServerFileCount -computername SRV01 | Format-Table
         
         Counting # of files in: \\SRV01\admin
         Counting # of files in: \\SRV01\Shared
