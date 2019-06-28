@@ -1,100 +1,130 @@
-Function Get-LocalGroupMember
-{
-<# 
-    .SYNOPSIS 
-    This function lists the members of a local group
+Function Get-LocalGroupMember {
+<#
+.Synopsis
+    Retrieves the local group membership for a particular group.
 
-    .DESCRIPTION 
-    This function lists the members of a local group. By default it queries the local administrators group. 
-    You can specify the name of the local group (i.e. Remote Desktop users") and you can also run the query against
-    mulitple computers at one time.If no computer is specified then it will query the local computer.
+.Description
+    Retrieves the local group membership for a particular group. The computer and
+    group can be specified. If no computername is specified then the local machine will be queried.
+    If no group  is specified then the Administrators group will be queried.
 
-    .EXAMPLE 
-    Get-LocalGroupMember -Group "remote desktop users" -Computername Server01
+.Parameter ComputerName
+    Name of the Computer to get group members. The default is "localhost" if not entered.
 
-    .EXAMPLE 
-    Get-LocalGroupMember -Group "administrators" -Computername Srvwin0979 | select-object -expandproperty members
+.Parameter GroupName
+    Name of the GroupName to get members from. The default is "Administrators" if not entered.
 
-    This command will get the members of the local admins group and display the full list (not truncated).
+    Common local groups are Administrators, Users, "Remote Desktop Users", "Event Log Readers",
+    "Backup Oeprators" and Guests. This is not an exhaustive list and the local groups will
+    vary by O/S.
 
-    .EXAMPLE 
-    Get-LocalGroupMember -Group "remote desktop users" -Computername $sessions
+    !!! Remember groups with spaces in the name need quotes !!!
+
+.Example
+    Get-LocalGroupMember
+
+    Returns the members of the Administrators group from the localhost
+
+.Example
+    Get-LocalGroupMember -ComputerName SERVER01 -GroupName "Remote Desktop Users"
+
+    Returns the members of the group "Remote Desktop Users" from computer named SERVER01
+
+.Example
+    Get-LocalGroupMember -ComputerName SERVER01,SERVER02 -GroupName "Administrators"
+
+    Returns the members of the group "Administrators" on the computers SERVER01 and SERVER02
+
+.OUTPUTS
+    PSCustomObject
+
+.INPUTS
+    Array
+
+.Link
+    https://github.com/compwiz32/PowerShell/
+
+.Notes
+        Name       : Get-LocalGroupMember.ps1
+        Author     : Mike Kanakos
+        Credit     : Francois-Xavier Cat / www.LazyWinAdmin.com (script original source)
+
+        Version    : v1.0.2
+        DateCreated: Unknown
+        DateUpdated: 2019-06-28
+
+        LASTEDIT:
+        - rename cmdlet name from "Get-LocalPCGroupMember" to "Get-LocalGroupMember"
+        - rename file name from "Get-LocalPCGroupMember.ps1" to "Add-Get-LocalGroupMember.ps1"
+        - fix examples to match new cmdlet name
+        - the renames are to make the cmdlet similar to the matching Get-LocalGroupMember cmdlet
 
 
-
-    Group: remote desktop users
-    Computername : CHI-FP01
-    Members: 
-
-    Group: remote desktop users
-    Computername : CHI-WIN8-01
-    Members: 
-
-    Computername : CHI-EX01
-    Members: 
-    Group: remote desktop users
-
-    Group: remote desktop users
-    Computername : CHI-DC01
-    Members: jfrost
-
-
-    .NOTES 
-    NAME: Get-LocalGroupMember
-    AUTHOR: Mike Kanakos
-    CREATED: 2016-06-22
-    UPDATED: 2017-08-06
-
-    Based 100% on script by Jeffrey Hicks found at:
-    https://powershell.org/get-local-admin-group-members-in-a-new-old-way-3/
 #>
 
-[cmdletbinding()]
 
-Param(
-[Parameter(Position=0)]
-[ValidateNotNullorEmpty()]
-[object[]]$Computername=$env:computername,
-[ValidateNotNullorEmpty()]
-[string]$Group = "Administrators",
-[switch]$Asjob
-)
+ [Cmdletbinding()]
 
-Write-Verbose "Getting members of local group $Group"
+ PARAM (
+        [alias('DnsHostName','__SERVER','Computer','IPAddress')]
+  [Parameter(ValueFromPipelineByPropertyName=$true,ValueFromPipeline=$true)]
+  [string[]]$ComputerName = $env:COMPUTERNAME,
 
-#define the scriptblock
-$sb = {
- Param([string]$Name = "Administrators")
-$members = net localgroup $Name | 
- where {$_ -AND $_ -notmatch "command completed successfully"} | 
- select -skip 4
-New-Object PSObject -Property @{
- Computername = $env:COMPUTERNAME
- Group = $Name
- Members=$members
- }
-} #end scriptblock
+  [string]$GroupName = "Administrators"
 
-#define a parameter hash table for splatting
-$paramhash = @{
- Scriptblock = $sb
- HideComputername=$True
- ArgumentList=$Group
- }
+  )
+    BEGIN{
+    }#BEGIN BLOCK
 
-if ($Computername[0] -is [management.automation.runspaces.pssession]) {
-$paramhash.Add("Session",$Computername)
-}
-else {
-$paramhash.Add("Computername",$Computername)
-}
+    PROCESS{
+        foreach ($Computer in $ComputerName){
+            TRY{
+                $Everything_is_OK = $true
 
-if ($asjob) {
-Write-Verbose "Running as job"
-$paramhash.Add("AsJob",$True)
-}
+                # Testing the connection
+                Write-Verbose -Message "$Computer - Testing connection..."
+                Test-Connection -ComputerName $Computer -Count 1 -ErrorAction Stop |Out-Null
 
-#run the command
-Invoke-Command @paramhash | Select * -ExcludeProperty RunspaceID
+                # Get the members for the group and computer specified
+                Write-Verbose -Message "$Computer - Querying..."
+             $Group = [ADSI]"WinNT://$Computer/$GroupName,group"
+             $Members = @($group.psbase.Invoke("Members"))
+            }#TRY
+            CATCH{
+                $Everything_is_OK = $false
+                Write-Warning -Message "Something went wrong on $Computer"
+                Write-Verbose -Message "Error on $Computer"
+                }#Catch
 
-} #end of function
+            IF($Everything_is_OK){
+             # Format the Output
+                Write-Verbose -Message "$Computer - Formatting Data"
+             $members | ForEach-Object {
+              $name = $_.GetType().InvokeMember("Name", 'GetProperty', $null, $_, $null)
+              $class = $_.GetType().InvokeMember("Class", 'GetProperty', $null, $_, $null)
+              $path = $_.GetType().InvokeMember("ADsPath", 'GetProperty', $null, $_, $null)
+
+              # Find out if this is a local or domain object
+              if ($path -like "*/$Computer/*"){
+               $Type = "Local"
+               }
+              else {$Type = "Domain"
+              }
+
+              $Details = "" | Select-Object ComputerName,Type,Class,Account,Group
+              $Details.ComputerName = $Computer
+              $Details.Account = $name
+              $Details.Class = $class
+              $Details.Group = $GroupName
+              # $details.Path = $path
+              $details.Type = $type
+
+              # Show the Output
+                    $Details
+             }
+            }#IF(Everything_is_OK)
+        }#Foreach
+    }#PROCESS BLOCK
+
+    END{Write-Verbose -Message "Script Done"}#END BLOCK
+}#Function Get-LocalPCGroupMember
