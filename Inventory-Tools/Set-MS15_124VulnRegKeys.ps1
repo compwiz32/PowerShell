@@ -1,4 +1,4 @@
-$nodelist = Get-Content C:\Scripts\Input\MS15-124_Hosts.txt
+$nodelist = Get-Content C:\Scripts\Input\MS15-124_HostsB.txt
 $Path64 = "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Internet Explorer\MAIN\FeatureControl"
 $Path32 = "HKLM:\SOFTWARE\Microsoft\Internet Explorer\MAIN\FeatureControl"
 
