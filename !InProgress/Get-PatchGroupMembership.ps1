@@ -32,14 +32,28 @@ Function Get-PatchGroupMembership {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $True, Position = 1)]
-        [string]$ComputerName
+        [string[]]$ComputerName
         )
 
     #Main part of function
 
-    Get-ADPrincipalGroupMembership (Get-ADComputer $ComputerName) | get-adgroup -Property description |
-        Select-Object Name, Description | Where-Object { $_.name -like "patch*" } | Sort-Object name
+    ForEach ($computer in $ComputerName){
+        $results = Get-ADPrincipalGroupMembership (Get-ADComputer $computer).distinguishedname | get-adgroup -Property description |
+            Select-Object Name, Description | Where-Object { $_.name -like "patch*" } | Sort-Object name
 
+        <#$results = Get-ADComputer $lookup.name -Properties memberof | get-adgroup $lookup.name -Property description |
+            Select-Object Name, Description | Where-Object { $_.name -like "patch*" } | Sort-Object name
+        #>
 
+        if (!$Results){
+            Write-Warning "$computername is not in any patch groups"
+        }
+            
+        else {
+            $results
+        }    
+    }
+    
+    
 
 } #END OF FUNCTION
