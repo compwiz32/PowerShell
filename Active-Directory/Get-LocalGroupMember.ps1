@@ -1,4 +1,4 @@
-Function Get-LocalGroupMember {
+Function Get-MKLocalGroupMember {
 <#
 .Synopsis
     Retrieves the local group membership for a particular group.
@@ -21,17 +21,17 @@ Function Get-LocalGroupMember {
     !!! Remember groups with spaces in the name need quotes !!!
 
 .Example
-    Get-LocalGroupMember
+    Get-MKLocalGroupMember
 
     Returns the members of the Administrators group from the localhost
 
 .Example
-    Get-LocalGroupMember -ComputerName SERVER01 -GroupName "Remote Desktop Users"
+    Get-MKLocalGroupMember -ComputerName SERVER01 -GroupName "Remote Desktop Users"
 
     Returns the members of the group "Remote Desktop Users" from computer named SERVER01
 
 .Example
-    Get-LocalGroupMember -ComputerName SERVER01,SERVER02 -GroupName "Administrators"
+    Get-MKLocalGroupMember -ComputerName SERVER01,SERVER02 -GroupName "Administrators"
 
     Returns the members of the group "Administrators" on the computers SERVER01 and SERVER02
 
@@ -45,19 +45,19 @@ Function Get-LocalGroupMember {
     https://github.com/compwiz32/PowerShell/
 
 .Notes
-        Name       : Get-LocalGroupMember.ps1
+        Name       : Get-MKLocalGroupMember.ps1
         Author     : Mike Kanakos
         Credit     : Francois-Xavier Cat / www.LazyWinAdmin.com (script original source)
 
-        Version    : v1.0.2
+        Version    : v1.0.3
         DateCreated: Unknown
         DateUpdated: 2019-06-28
 
         LASTEDIT:
-        - rename cmdlet name from "Get-LocalPCGroupMember" to "Get-LocalGroupMember"
-        - rename file name from "Get-LocalPCGroupMember.ps1" to "Add-Get-LocalGroupMember.ps1"
+        - rename cmdlet name from "Get-LocalGroupMember" to "Get-MKLocalGroupMember"
+        - rename file name from "Get-LocalGroupMember.ps1" to "Get-MKLocalGroupMember"
         - fix examples to match new cmdlet name
-        - the renames are to make the cmdlet similar to the matching Get-LocalGroupMember cmdlet
+        - the renames are to avoid name collisons with built in cmdlets
 
 
 #>
