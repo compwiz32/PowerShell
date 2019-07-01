@@ -1,4 +1,4 @@
-Function Add-LocalGroupMember {
+Function Add-MKLocalGroupMember {
 <#
     .SYNOPSIS
         Adds an AD user or an AD group to local user group on a client PC or server.
@@ -20,29 +20,29 @@ Function Add-LocalGroupMember {
         If no choice is made, the default will be Administrators
 
     .EXAMPLE
-        Add-LocalGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
+        Add-MKLocalGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
 
         Description:
         Will add the account named Michael_Kanakos to the local Administrators group on the computer named Server01
 
     .EXAMPLE
-        Add-LocalGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
+        Add-MKLocalGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
 
         Description:
         Will add the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
 
 
     .NOTES
-        Name       : Add-LocalGroupMember.ps1
+        Name       : Add-MKLocalGroupMember.ps1
         Author     : Mike Kanakos
-        Version    : 3.0.2
+        Version    : 3.0.3
         DateCreated: 2018-12-03
-        DateUpdated: 2019-06-28
+        DateUpdated: 2019-06-30
 
         LASTEDIT:
-        - rename cmdlet name from "Add-LocalMember" to "Add-LocalGroupMember"
-        - rename file name from "Add-LocalMember.ps1" to "Add-LocalGroupMember.ps1"
-        - the renames are to make the cmdlet similar to the matching Get-LocalGroupMember cmdlet
+        - rename cmdlet name from "Add-LocalGroupMember" to "Add-MKlocalGroupMember"
+        - rename file name from "Add-LocalGroupMember.ps1 to Add-MKLocalGroupMember.ps1
+        - the renames are to avoid name collisons with built cmdlets
 
     .LINK
         https://github.com/compwiz32/PowerShell
