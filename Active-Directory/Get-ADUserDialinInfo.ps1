@@ -2,41 +2,44 @@ function Get-ADUserDialinInfo {
     
     <#
     .SYNOPSIS
-        Returns dialin permission status from Active Directory for one or more user accounts.
+        Returns dial-in permission status from Active Directory for one or more user accounts.
 
     .DESCRIPTION
-        Returns dialin permission status from Active Directory for one or more user accounts. Reads the AD value 
-        msNPAllowDialin and displays the the current value, which would be a boolean (True or False). Function 
+        Returns dial-in permission status from Active Directory for one or more user accounts. Reads the AD value 
+        'msNPAllowDialin' and displays the the current value, which is a boolean (True or False). Function 
         reformats the True/False value to a more user friendly 'Enabled/'Disabled' output. 
 
     .PARAMETER UserName
-        Specifies a computer to add the users to. Multiple computers can be specificed with commas and single quotes
-        (-Computer 'Server01','Server02')
+        Specifies a user to query. Multiple users can be queried with commas and single quotes
+        (-User 'Mike_Kanakos','Joe_Smith')
 
     .EXAMPLE
-        Add-MKLocalGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
+        Get-ADUserDialinInfo -User Mike_Kanakos
 
-        Description:
-        Will add the account named Michael_Kanakos to the local Administrators group on the computer named Server01
+        User:           DialInStatus:
+        -----           -------------
+        Mike_Kanakos    Enabled
 
     .EXAMPLE
-        Add-MKLocalGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
+        Get-ADUserDialinInfo -User Mike_Kanakos, Joe_Smith
 
-        Description:
-        Will add the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
+        User:           DialInStatus:
+        -----           -------------
+        Mike_Kanakos    Enabled
+        Joe_Smith       Disabled
 
 
     .NOTES
-        Name       : Add-MKLocalGroupMember.ps1
+        Name       : Get-ADUserDialinInfo.ps1
         Author     : Mike Kanakos
-        Version    : 3.0.3
-        DateCreated: 2018-12-03
-        DateUpdated: 2019-06-30
+        Version    : 1.0.1
+        DateCreated: 2019-07-05
+        DateUpdated: 2019-07-05
 
         LASTEDIT:
-        - rename cmdlet name from "Add-LocalGroupMember" to "Add-MKlocalGroupMember"
-        - rename file name from "Add-LocalGroupMember.ps1 to Add-MKLocalGroupMember.ps1
-        - the renames are to avoid name collisons with built cmdlets
+        - Scaffold function
+        - Build logic and output
+    
 
     .LINK
         https://github.com/compwiz32/PowerShell
@@ -52,11 +55,15 @@ function Get-ADUserDialinInfo {
     
     begin {
         
-        Get-ADUser $Username -Properties msNPAllowDialin | Select-Object samaccountname, msNPAllowDialin
-
     }
     
     process {
+        
+        $Results = [System.Collections.Generic.List[object]]::new()
+        
+        foreach ($User in $Username) {
+            $results.Add = Get-ADUser $Username -Properties msNPAllowDialin | Select-Object Name, msNPAllowDialin
+        }
         
     }
     
