@@ -71,7 +71,9 @@ Function Get-MKLocalGroupMember {
     [string[]]$ComputerName = $env:COMPUTERNAME,
 
     [Parameter(Position = 0)]
-    [string]$GroupName = "Administrators"
+    [ValidateSet('Administrators','Remote Desktop Users','Remote Management Users', 'Users', 'Event Log Readers')]
+    [string]
+    $GroupName = "Administrators"
 
   )
     BEGIN{
