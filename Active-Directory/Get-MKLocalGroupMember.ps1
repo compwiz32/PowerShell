@@ -49,16 +49,13 @@ Function Get-MKLocalGroupMember {
         Author     : Mike Kanakos
         Credit     : Francois-Xavier Cat / www.LazyWinAdmin.com (script original source)
 
-        Version    : v1.0.3
+        Version    : v1.0.4
         DateCreated: Unknown
         DateUpdated: 2019-06-28
 
         LASTEDIT:
-        - rename cmdlet name from "Get-LocalGroupMember" to "Get-MKLocalGroupMember"
-        - rename file name from "Get-LocalGroupMember.ps1" to "Get-MKLocalGroupMember"
-        - fix examples to match new cmdlet name
-        - the renames are to avoid name collisons with built in cmdlets
-
+        - set positions for parameters.
+        - Moved "computername" to position 1 so it can be skipped when using invoke-command
 
 #>
 
@@ -66,11 +63,15 @@ Function Get-MKLocalGroupMember {
  [Cmdletbinding()]
 
  PARAM (
-        [alias('DnsHostName','__SERVER','Computer','IPAddress')]
-  [Parameter(ValueFromPipelineByPropertyName=$true,ValueFromPipeline=$true)]
-  [string[]]$ComputerName = $env:COMPUTERNAME,
+    [alias('DnsHostName','__SERVER','Computer','IPAddress')]
+    [Parameter(
+        ValueFromPipelineByPropertyName=$true,
+        ValueFromPipeline=$true,
+        Position = 1)]
+    [string[]]$ComputerName = $env:COMPUTERNAME,
 
-  [string]$GroupName = "Administrators"
+    [Parameter(Position = 0)]
+    [string]$GroupName = "Administrators"
 
   )
     BEGIN{
