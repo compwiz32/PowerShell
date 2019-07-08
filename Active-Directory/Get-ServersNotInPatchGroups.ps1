@@ -59,6 +59,7 @@ $Params = @{
                -and description -notlike '*cluster virtual*'
                -and description -notlike '*template*'
                -and description -notlike '*inactive*'
+               -and canonicalname -notlike '*inactive*'
                "
 
 
