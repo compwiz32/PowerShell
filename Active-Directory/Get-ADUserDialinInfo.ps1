@@ -62,7 +62,7 @@ function Get-ADUserDialinInfo {
         $Results = [System.Collections.Generic.List[object]]::new()
         
         foreach ($User in $Username) {
-            $results.Add = Get-ADUser $Username -Properties msNPAllowDialin | 
+            $results.Add = Get-ADUser $User -Properties msNPAllowDialin | 
                 Select-Object Name, @{Name='DialInStatus'; Expression={@{$true='ENABLED';$false='DISABLED'}[$_.msNPAllowDialin]}}
 
         }
