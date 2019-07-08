@@ -23,27 +23,25 @@ Function Add-MKLocalGroupMember {
         Add-MKLocalGroupMember -Computer Server01 -Account Michael_Kanakos -Group Administrators
 
         Description:
-        Will add the account named Michael_Kanakos to the local Administrators group on the computer named Server01
+        Adds the account named Michael_Kanakos to the local Administrators group on the computer named Server01
 
     .EXAMPLE
         Add-MKLocalGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
 
         Description:
-        Will add the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
+        Adds the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
 
 
     .NOTES
         Name       : Add-MKLocalGroupMember.ps1
         Author     : Mike Kanakos
-        Version    : 3.0.3
+        Version    : 3.0.4
         DateCreated: 2018-12-03
-        DateUpdated: 2019-06-30
+        DateUpdated: 2019-07-05
 
         LASTEDIT:
-        - rename cmdlet name from "Add-LocalGroupMember" to "Add-MKlocalGroupMember"
-        - rename file name from "Add-LocalGroupMember.ps1 to Add-MKLocalGroupMember.ps1
-        - the renames are to avoid name collisons with built cmdlets
-
+        - remove mandatory from computername parameter. This change is so that it can be skipped when using invoke-command
+        
     .LINK
         https://github.com/compwiz32/PowerShell
 
@@ -55,7 +53,7 @@ param(
     [string]
     $Account,
 
-    [Parameter(Mandatory=$true,Position=1)]
+    [Parameter(Position=1)]
     [string[]]
     $ComputerName,
 
