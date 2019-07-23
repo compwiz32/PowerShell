@@ -29,18 +29,18 @@ Function Add-MKLocalGroupMember {
         Add-MKLocalGroupMember -Computer 'Server01','Server02' -Account HRManagers -Group 'Remote Desktop Users'
 
         Description:
-        Adds the HRManagers group as a member of Remote Desktop Users group on computers named Server01 and Server02
+        Adds the HRManagers group to the local Remote Desktop Users group on computers named Server01 and Server02
 
 
     .NOTES
         Name       : Add-MKLocalGroupMember.ps1
         Author     : Mike Kanakos
-        Version    : 3.0.4
+        Version    : 3.0.5
         DateCreated: 2018-12-03
-        DateUpdated: 2019-07-05
+        DateUpdated: 2019-07-23
 
         LASTEDIT:
-        - remove mandatory from computername parameter. This change is so that it can be skipped when using invoke-command
+        - Change text color output of variables returned ins status message
         
     .LINK
         https://github.com/compwiz32/PowerShell
@@ -79,7 +79,16 @@ param(
                   Else {
                       $ADSILookup = ([adsisearcher]"(samaccountname=$Account)").findone().properties['samaccountname']
 
-                      Write-Host "Attempting to add $ADSILookup to $group on $computer"
+                      # Write-Host "Attempting to add $ADSILookup to $group on $computer"
+                      Write-Host "Attempting to add " -NoNewline
+                      Write-Host $ADSILookup -ForegroundColor Cyan -NoNewline
+                      Write-Host " to " -NoNewline
+                      Write-Host $group -ForegroundColor Blue -NoNewline
+                      Write-Host " group on computer named " -NoNewline
+                      Write-Host $computer -ForegroundColor Red
+
+
+
                       $AcctReWrite = ([ADSI]"WinNT://$Domain/$ADSILookup").path
 
                       ([adsi]"WinNT://$Computer/$Group,group").add($AcctReWrite)
