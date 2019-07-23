@@ -59,8 +59,8 @@ $Params = @{
                -and description -notlike '*cluster virtual*'
                -and description -notlike '*template*'
                -and description -notlike '*inactive*'
-               -and canonicalname -notlike '*inactive*'
                "
+               
 
 
    Properties = 'operatingsystem',
@@ -69,6 +69,12 @@ $Params = @{
                 'memberof'
    }
 
-Get-adcomputer @params | Where-Object {[String] $_.memberof -notlike  "*patch*" -and $_.enabled -eq $true }
+
+   
+Get-adcomputer @params | Where-Object {[String] $_.memberof -notlike "*patch-*"  }
+# Get-adcomputer @params 
+# -and canonicalname -notlike '*inactive*' 
+# Description $null 
+
 }
 
