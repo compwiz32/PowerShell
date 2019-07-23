@@ -27,31 +27,18 @@ Function Get-ConsoleColors {
 
 #>
     
-
     $List = [enum]::GetValues([System.ConsoleColor]) 
     
     ForEach ($Color in $List){
-        # Write-Host "   " -nonewline
         Write-Host "      $Color" -ForegroundColor $Color -NonewLine
         Write-Host "" 
         
     }
 
     ForEach ($Color in $List){
-        # Write-Host "  " -nonewline -backgroundColor $color
         Write-Host "      Background: $Color      " -backgroundColor $Color
-        # Write-Host "      " -backgroundColor $color
-        
+                
     }
 
-
-    
-    
-    # | Foreach-Object {Write-Host $_ -ForegroundColor $_}  
-
-    # [enum]::GetValues([System.ConsoleColor]) | Foreach-Object {
-    #    Write-Host "  " $_ -Backgroundcolor -nonewline
-    #    WR
-    #     $_ -BackgroundColor $_}  
     
 }
