@@ -26,6 +26,9 @@ Function Get-ConsoleColors {
 
 
 #>
+
+[CmdletBinding()]
+    Param()
     
     $List = [enum]::GetValues([System.ConsoleColor]) 
     
@@ -36,7 +39,8 @@ Function Get-ConsoleColors {
     }
 
     ForEach ($Color in $List){
-        Write-Host "      Background: $Color      " -backgroundColor $Color
+        Write-Host "                   " -backgroundColor $Color -noNewLine
+        Write-Host "   $Color"
                 
     }
 
