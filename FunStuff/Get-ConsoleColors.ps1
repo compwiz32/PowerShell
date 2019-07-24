@@ -13,7 +13,7 @@ Function Get-ConsoleColors {
     .NOTES
         Name       : Get-ConsoleColors.ps1
         Author     : Mike Kanakos
-        Version    : 1.0.1
+        Version    : 1.0.3
         DateCreated: 2019-07-23
         DateUpdated: 2019-07-23
 
@@ -36,13 +36,12 @@ Function Get-ConsoleColors {
         Write-Host "      $Color" -ForegroundColor $Color -NonewLine
         Write-Host "" 
         
-    }
+    } #end foreground color ForEach loop
 
     ForEach ($Color in $List){
         Write-Host "                   " -backgroundColor $Color -noNewLine
         Write-Host "   $Color"
                 
-    }
-
+    } #end background color ForEach loop
     
-}
+} #end function
