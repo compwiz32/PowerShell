@@ -1,5 +1,5 @@
 Function Remove-MKLocalGroupMember {
-<#
+    <#
     .SYNOPSIS
         Removes an AD user or an AD group from a local user group on a client PC or server.
 
@@ -34,71 +34,71 @@ Function Remove-MKLocalGroupMember {
     .NOTES
         Name       : Remove-MKLocalGroupMember.ps1
         Author     : Mike Kanakos
-        Version    : 1.0.0
+        Version    : 1.0.1
         DateCreated: 2019-07-23
-        DateUpdated: 2019-07-23
+        DateUpdated: 2019-08-06
 
         LASTEDIT:
-        - Creation of function
+        - - change output colors of variables returned to screen
         
     .LINK
         https://github.com/compwiz32/PowerShell
 
 #>
 
-[CmdletBinding(SupportsShouldProcess=$true)]
-param(
-    [Parameter(Mandatory=$True,Position=0)]
-    [string]
-    $Account,
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param(
+        [Parameter(Mandatory = $True, Position = 0)]
+        [string]
+        $Account,
 
-    [Parameter(Position=1)]
-    [string[]]
-    $ComputerName,
+        [Parameter(Position = 1)]
+        [string[]]
+        $ComputerName,
 
-    [Parameter(Mandatory=$true,Position=2)]
-    [ValidateSet('Administrators','Remote Desktop Users','Remote Management Users', 'Users', 'Event Log Readers')]
-    [String]
-    $Group = 'Administrators'
+        [Parameter(Mandatory = $true, Position = 2)]
+        [ValidateSet('Administrators', 'Remote Desktop Users', 'Remote Management Users', 'Users', 'Event Log Readers')]
+        [String]
+        $Group = 'Administrators'
     )
 
-        begin{
-            $Domain = $env:userdomain
-           } #end begin
+    begin {
+        $Domain = $env:userdomain
+    } #end begin
 
-        process{
-            Foreach($Computer in $ComputerName){
-              try{
-                  $Connection = Test-Connection $Computer -Quiet -Count 2
+    process {
+        Foreach ($Computer in $ComputerName) {
+            try {
+                $Connection = Test-Connection $Computer -Quiet -Count 2
 
-                  If(!($Connection)) {
+                If (!($Connection)) {
                     Write-Warning "Computer: $Computer appears to be offline!"
-                    } #end if
-
-                  Else {
-                      $ADSILookup = ([adsisearcher]"(samaccountname=$Account)").findone().properties['samaccountname']
-
-                      Write-Host "Attempting to remove: " -NoNewline
-                      Write-Host $ADSILookup -ForegroundColor Cyan -NoNewline
-                      Write-Host " to " -NoNewline
-                      Write-Host $group -ForegroundColor Blue -NoNewline
-                      Write-Host " group on computer named " -NoNewline
-                      Write-Host $computer -ForegroundColor Red
-                      $AcctReWrite = ([ADSI]"WinNT://$Domain/$ADSILookup").path
-
-                      ([adsi]"WinNT://$Computer/$Group,group").Remove($AcctReWrite)
-                      Write-Host "Success!" -foregroundcolor Green
-
-                    } #end else
-                } # end try
-
-              catch {
-                  $ADSILookup = $null
-                } #end catch
-
-                if (!$ADSILookup) {
-                    Write-Warning "User `'$Account`' not found in AD, please input correct SAM Account"
                 } #end if
-            } #end Foreach
-        }# end Process
-    }#end function
+
+                Else {
+                    $ADSILookup = ([adsisearcher]"(samaccountname=$Account)").findone().properties['samaccountname']
+
+                    Write-Host "Attempting to remove: " -NoNewline
+                    Write-Host $ADSILookup -ForegroundColor White -BackgroundColor Blue -NoNewline
+                    Write-Host " from " -NoNewline
+                    Write-Host $group -ForegroundColor White -BackgroundColor Magenta -NoNewline
+                    Write-Host " group on computer named " -NoNewline
+                    Write-Host $computer -ForegroundColor White -BackgroundColor Red
+                    $AcctReWrite = ([ADSI]"WinNT://$Domain/$ADSILookup").path
+
+                    ([adsi]"WinNT://$Computer/$Group,group").Remove($AcctReWrite)
+                    Write-Host "Success!" -foregroundcolor Green
+
+                } #end else
+            } # end try
+
+            catch {
+                $ADSILookup = $null
+            } #end catch
+
+            if (!$ADSILookup) {
+                Write-Warning "User `'$Account`' not found in AD, please input correct SAM Account"
+            } #end if
+        } #end Foreach
+    }# end Process
+}#end function
