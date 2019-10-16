@@ -79,8 +79,15 @@ param (
     [string]
     $Domain = $env:USERDNSDOMAIN,
 
-    [Parameter()]
-    [string]
+    # Specify aliases for the Server parameter and support tab completion for domain controller names.
+    [Parameter(]
+    [Alias("DomainController","DC")]
+    [ArgumentCompleter( {
+        param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
+        $possibleValues = @{ Server = (Get-ADDomainController -Filter *).Hostname }
+        if ($fakeBoundParameters.ContainsKey('Type')) { $possibleValues[$fakeBoundParameters.Type] | Where-Object { $_ -like "$wordToComplete*" } }
+        else { $possibleValues.Values | ForEach-Object {$_} }
+    } )]
     $Server
     )
 
