@@ -77,7 +77,7 @@ param (
 
     [Parameter()]
     [string]
-    $Domain = (Get-WmiObject Win32_ComputerSystem).Domain,
+    $Domain = $env:USERDNSDOMAIN,
 
     [Parameter()]
     [string]
