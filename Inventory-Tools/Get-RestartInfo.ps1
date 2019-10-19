@@ -7,6 +7,14 @@
     .DESCRIPTION
         Queries the system event log and returns all log entries related to reboot & shutdown events (event ID 1074)
 
+    .Parameter ComputerName
+    Specifies a computer to add the users to. Multiple computers can be specificed with commas and single quotes
+    (-Computer 'Server01','Server02')
+
+    .PARAMETER Credential
+    Specifies the user you would like to run this function as
+
+
     .EXAMPLE
         Get-Restartinfo
 
@@ -72,7 +80,14 @@ Param(
     [Parameter(ValueFromPipeline,ValueFromPipelineByPropertyName)]
     [alias("Name","MachineName","Computer")]
     [string[]]
-    $ComputerName = 'localhost'
+    $ComputerName = 'localhost',
+
+    [ValidateNotNull()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential = [System.Management.Automation.PSCredential]::Empty
+
+
     )
 
     Begin { }
@@ -88,7 +103,7 @@ Param(
             Else {
                 Get-WinEvent -ComputerName $computer -FilterHashtable @{logname = 'System'; id = 1074,6006,6008}  |
                     ForEach-Object {
-                        $EventData = New-Object PSObject | Select-Object Date, EventID, User, Action, Process, Reason, ReasonCode, Comment, Computer
+                        $EventData = New-Object PSObject | Select-Object Date, EventID, User, Action, Reason, ReasonCode, Comment, Computer, Message, Process
                         $EventData.Date = $_.TimeCreated
                         $EventData.User = $_.Properties[6].Value
                         $EventData.Process = $_.Properties[0].Value
@@ -98,7 +113,8 @@ Param(
                         $EventData.Comment = $_.Properties[5].Value
                         $EventData.Computer = $Computer
                         $EventData.EventID = $_.id
-                        $EventData} | Select-Object Computer, Date, EventID, Action, User, Reason, Comment
+                        $EventData.Message = $_.Message
+                        $EventData} | Select-Object Computer, Date, EventID, Action, User, Message, Process
                 } #End Else
         } #Foreach Computer Loop
     } #end Process block
