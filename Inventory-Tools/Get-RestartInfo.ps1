@@ -101,7 +101,7 @@ Param(
             } #end If
 
             Else {
-                Get-WinEvent -ComputerName $computer -FilterHashtable @{logname = 'System'; id = 1074,6006,6008}  |
+                Get-WinEvent -ComputerName $computer -FilterHashtable @{logname = 'System'; id = 1074, 6005, 6006,6008}  |
                     ForEach-Object {
                         $EventData = New-Object PSObject | Select-Object Date, EventID, User, Action, Reason, ReasonCode, Comment, Computer, Message, Process
                         $EventData.Date = $_.TimeCreated
