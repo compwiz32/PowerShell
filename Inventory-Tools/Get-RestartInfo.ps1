@@ -8,7 +8,7 @@
         Queries the system event log and returns all log entries related to reboot & shutdown events (event ID 1074)
 
     .Parameter ComputerName
-    Specifies a computer to add the users to. Multiple computers can be specificed with commas and single quotes
+    Specifies a computer to add the users to. Multiple computers can be specified with commas and single quotes
     (-Computer 'Server01','Server02')
 
     .PARAMETER Credential
@@ -16,7 +16,7 @@
 
 
     .EXAMPLE
-        Get-Restartinfo
+        Get-RestartInfo
 
         This command will return all the shutdown/restart eventlog info for the local computer.
 
@@ -48,7 +48,7 @@
 
 
     .EXAMPLE
-        Get-Restartinfo SERVER01 | select-object Computer, Date, Action, Reason, User
+        Get-RestartInfo SERVER01 | select-object Computer, Date, Action, Reason, User
 
         This command will return all the shutdown/restart eventlog info for server named SERVER01
 
@@ -66,8 +66,8 @@
         NAME: Get-RestartInfo
         AUTHOR: Mike Kanakos
         CREATED: 2016-09-27
-        LASTEDIT: 2019-01-15
-        MISC: Found and modified script online at
+        LASTEDIT: 2019-12-17
+        MISC: Function based on script found at:
         https://social.technet.microsoft.com/wiki/contents/articles/17889.powershell-script-for-shutdownreboot-events-tracker.aspx
         CREDIT: Biswajit Biswas
 
@@ -87,7 +87,6 @@ Param(
         [System.Management.Automation.Credential()]
         $Credential = [System.Management.Automation.PSCredential]::Empty
 
-
     )
 
     Begin { }
@@ -101,7 +100,7 @@ Param(
             } #end If
 
             Else {
-                Get-WinEvent -ComputerName $computer -FilterHashtable @{logname = 'System'; id = 1074,6006,6008}  |
+                Get-WinEvent -ComputerName $computer -FilterHashtable @{logname = 'System'; id = 1074,6005,6006,6008}  |
                     ForEach-Object {
                         $EventData = New-Object PSObject | Select-Object Date, EventID, User, Action, Reason, ReasonCode, Comment, Computer, Message, Process
                         $EventData.Date = $_.TimeCreated
@@ -114,8 +113,10 @@ Param(
                         $EventData.Computer = $Computer
                         $EventData.EventID = $_.id
                         $EventData.Message = $_.Message
-                        $EventData} | Select-Object Computer, Date, EventID, Action, User, Message, Process
-                } #End Else
-        } #Foreach Computer Loop
+                    
+                        $EventData | Select-Object Computer, Date, EventID, Action, User, Message, Process
+                    }
+                } #end Else
+        } #end Foreach Computer Loop
     } #end Process block
 } #end of Function
