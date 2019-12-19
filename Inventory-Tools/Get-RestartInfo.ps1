@@ -116,7 +116,6 @@ Param(
                     
                         $EventData | Select-Object Computer, Date, EventID, Action, Reason, User, Process, Comment
 
-
                     }
                 } #end Else
         } #end Foreach Computer Loop
