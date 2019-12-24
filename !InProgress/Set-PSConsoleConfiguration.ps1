@@ -8,7 +8,7 @@ function Set-PSConsoleConfiguration {
         Sets the window size, font and font attributes for the PowerShell console window. Allows for programatically
         setting the properties of the PowerShell console without having to interact with the GUI.
 
-    .PARAMETER BufferSize
+    .PARAMETER BufferSizeHeight
         The name of the computer you want to query. More than one computer can be entered by seperating each computername
         should be with a comma.
 
@@ -82,25 +82,25 @@ function Set-PSConsoleConfiguration {
 
     [CmdletBinding()]
     param (
-        # screen buffer size
+        # screen buffer size height (How many lines back can you see)
         [Parameter()]
-        [ValidateRange(1..9999)]
-        [int]
-        $BufferSize
+        [ValidateRange(1,9999)]
+        [int32]
+        $BufferSizeHeight,
 
-        # console window width
-        [Parameter()]
-        [ValidateRange(20..300)]
-        [int]
-        $WindowWidth
+        # console window width (How wide is console window)
+        [Parameter(Mandatory=$true)]
+        [ValidateRange(40,300)]
+        [int32]
+        $WindowWidth,
 
-        # console window height
-        [Parameter()]
-        [ValidateRange(20-60)]
-        [int]
-        $WindowHeight
+        # console window height (How tall is console window)
+        [Parameter(Mandatory=$true)]
+        [ValidateRange(20,60)]
+        [int32]
+        $WindowHeight,
 
-        # console title text
+        # console title text (Banner message at top of console window)
         [Parameter()]
         [string]
         $MessageTitle
@@ -112,6 +112,10 @@ function Set-PSConsoleConfiguration {
     }
 
     process {
+
+        $Host.UI.RawUI.WindowTitle = $MessageTitle,
+        $Host.UI.RawUI.WindowSize = $WindowWidth, $WindowHeight
+        $Host.UI.RawUI.BufferSize = $WindowWidth, $BufferSizeHeight
 
     }
 
