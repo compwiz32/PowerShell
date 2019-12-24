@@ -25,19 +25,19 @@
 
 
 [cmdletbinding()]
-    Param(
-        [parameter()]
-        [switch]$LatencyOnly,
-        [parameter()]
-        [string]$Domain,
-        [array]$ListOfTCPPorts=("88","445","389","3268","135","139","636","3269","464","5722","53","9389","5985","5986"),
-        [parameter()]
-        [array]$ListOfUDPPorts=("88","389","464","123","53"),
-        [parameter()]
-        [Array]$Server,
-        [Switch]$Minimum,
-        [Switch]$All
-    )
+Param(
+    [parameter()]
+    [switch]$LatencyOnly,
+    [parameter()]
+    [string]$Domain,
+    [array]$ListOfTCPPorts = ("88", "445", "389", "3268", "135", "139", "636", "3269", "464", "5722", "53", "9389", "5985", "5986"),
+    [parameter()]
+    [array]$ListOfUDPPorts = ("88", "389", "464", "123", "53"),
+    [parameter()]
+    [Array]$Server,
+    [Switch]$Minimum,
+    [Switch]$All
+)
 
 $Version = 1.3
 
@@ -49,14 +49,14 @@ if (-not (get-module activedirectory -ListAvailable)) {
 
 $VerbosePreference = [System.Management.Automation.ActionPreference]::Continue
 
-if ($server -and $domain) { "Cannot use both -Server and -Domain";break }
-if (-not $server -and -not $domain) { while (-not $Domain) { $Domain=read-host "Domain" } }
+if ($server -and $domain) { "Cannot use both -Server and -Domain"; break }
+if (-not $server -and -not $domain) { while (-not $Domain) { $Domain = read-host "Domain" } }
 
 
 #Function Test-port from https://gallery.technet.microsoft.com/scriptcenter/97119ed6-6fb2-446d-98d8-32d823867131
 
-function Test-Port{
-<#
+function Test-Port {
+    <#
 .SYNOPSIS
     Tests port on computer.
 
@@ -135,41 +135,41 @@ function Test-Port{
     Checks a range of ports from 1-59 on all servers in the hosts.txt file
 
 #>
-[cmdletbinding(
-    DefaultParameterSetName = '',
-    ConfirmImpact = 'low'
-)]
+    [cmdletbinding(
+        DefaultParameterSetName = '',
+        ConfirmImpact = 'low'
+    )]
     Param(
         [Parameter(
             Mandatory = $True,
             Position = 0,
             ParameterSetName = '',
             ValueFromPipeline = $True)]
-            [array]$computer,
+        [array]$computer,
         [Parameter(
             Position = 1,
             Mandatory = $True,
             ParameterSetName = '')]
-            [array]$port,
+        [array]$port,
         [Parameter(
             Mandatory = $False,
             ParameterSetName = '')]
-            [int]$TCPtimeout=1000,
+        [int]$TCPtimeout = 1000,
         [Parameter(
             Mandatory = $False,
             ParameterSetName = '')]
-            [int]$UDPtimeout=1000,
+        [int]$UDPtimeout = 1000,
         [Parameter(
             Mandatory = $False,
             ParameterSetName = '')]
-            [switch]$TCP,
+        [switch]$TCP,
         [Parameter(
             Mandatory = $False,
             ParameterSetName = '')]
-            [switch]$UDP
-        )
+        [switch]$UDP
+    )
     Begin {
-        If (!$tcp -AND !$udp) {$tcp = $True}
+        If (!$tcp -AND !$udp) { $tcp = $True }
         #Typically you never do this, but in this case I felt it was for the benefit of the function
         #as any errors will be noted in the output of the report
         $ErrorActionPreference = "SilentlyContinue"
@@ -184,11 +184,11 @@ function Test-Port{
                     #Create object for connecting to port on computer
                     $tcpobject = new-Object system.Net.Sockets.TcpClient
                     #Connect to remote machine's port
-                    $connect = $tcpobject.BeginConnect($c,$p,$null,$null)
+                    $connect = $tcpobject.BeginConnect($c, $p, $null, $null)
                     #Configure a timeout before quitting
-                    $wait = $connect.AsyncWaitHandle.WaitOne($TCPtimeout,$false)
+                    $wait = $connect.AsyncWaitHandle.WaitOne($TCPtimeout, $false)
                     #If timeout
-                    If(!$wait) {
+                    If (!$wait) {
                         #Close connection
                         $tcpobject.Close()
                         #Write-Verbose "Connection Timeout"
@@ -198,27 +198,29 @@ function Test-Port{
                         $temp.TypePort = "TCP"
                         $temp.Open = $False
                         $temp.Notes = "Connection to Port Timed Out"
-                    } Else {
+                    }
+                    Else {
                         $error.Clear()
                         $tcpobject.EndConnect($connect) | out-Null
                         #If error
-                        If($error[0]){
+                        If ($error[0]) {
                             #Begin making error more readable in report
                             [string]$string = ($error[0].exception).message
-                            $message = (($string.split(":")[1]).replace('"',"")).TrimStart()
+                            $message = (($string.split(":")[1]).replace('"', "")).TrimStart()
                             $failed = $true
                         }
                         #Close connection
                         $tcpobject.Close()
                         #If unable to query port to due failure
-                        If($failed){
+                        If ($failed) {
                             #Build report
                             $temp.Server = $c
                             $temp.Port = $p
                             $temp.TypePort = "TCP"
                             $temp.Open = $False
                             $temp.Notes = "$message"
-                        } Else{
+                        }
+                        Else {
                             #Build report
                             $temp.Server = $c
                             $temp.Port = $p
@@ -235,28 +237,33 @@ function Test-Port{
                 If ($udp) {
                     #Create temporary holder
                     $temp = "" | Select Server, Port, TypePort, Open, Notes
+
                     #Create object for connecting to port on computer
                     $udpobject = new-Object system.Net.Sockets.Udpclient
+
                     #Set a timeout on receiving message
                     $udpobject.client.ReceiveTimeout = $UDPTimeout
+
                     #Connect to remote machine's port
                     #Write-Verbose "Making UDP connection to remote server"
-                    $udpobject.Connect("$c",$p)
+                    $udpobject.Connect("$c", $p)
+
                     #Sends a message to the host to which you have connected.
                     #Write-Verbose "Sending message to remote host"
                     $a = new-object system.text.asciiencoding
                     $byte = $a.GetBytes("$(Get-Date)")
-                    [void]$udpobject.Send($byte,$byte.length)
+                    [void]$udpobject.Send($byte, $byte.length)
+
                     #IPEndPoint object will allow us to read datagrams sent from any source.
                     #Write-Verbose "Creating remote endpoint"
-                    $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any,0)
+                    $remoteendpoint = New-Object system.net.ipendpoint([system.net.ipaddress]::Any, 0)
                     Try {
                         #Blocks until a message returns on this socket from a remote host.
                         #Write-Verbose "Waiting for message return"
                         $receivebytes = $udpobject.Receive([ref]$remoteendpoint)
                         [string]$returndata = $a.GetString($receivebytes)
                         If ($returndata) {
-                           #Write-Verbose "Connection Successful"
+                            #Write-Verbose "Connection Successful"
                             #Build report
                             $temp.Server = $c
                             $temp.Port = $p
@@ -265,7 +272,8 @@ function Test-Port{
                             $temp.Notes = $returndata
                             $udpobject.close()
                         }
-                    } Catch {
+                    }
+                    Catch {
                         If ($Error[0].ToString() -match "\bRespond after a period of time\b") {
                             #Close connection
                             $udpobject.Close()
@@ -278,7 +286,8 @@ function Test-Port{
                                 $temp.TypePort = "UDP"
                                 $temp.Open = $True
                                 $temp.Notes = ""
-                            } Else {
+                            }
+                            Else {
                                 <#
                                 It is possible that the host is not online or that the host is online,
                                 but ICMP is blocked by a firewall and this port is actually open.
@@ -291,7 +300,8 @@ function Test-Port{
                                 $temp.Open = $False
                                 $temp.Notes = "Unable to verify if port is open or if host is unavailable."
                             }
-                        } ElseIf ($Error[0].ToString() -match "forcibly closed by the remote host" ) {
+                        }
+                        ElseIf ($Error[0].ToString() -match "forcibly closed by the remote host" ) {
                             #Close connection
                             $udpobject.Close()
                             #Write-Verbose "Connection Timeout"
@@ -301,7 +311,8 @@ function Test-Port{
                             $temp.TypePort = "UDP"
                             $temp.Open = $False
                             $temp.Notes = "Connection to Port Timed Out"
-                        } Else {
+                        }
+                        Else {
                             $udpobject.close()
                         }
                     }
@@ -317,32 +328,32 @@ function Test-Port{
     }
 }
 
-function PortNote ($Port){
+function PortNote ($Port) {
 
-	Switch ($Port) {
+    Switch ($Port) {
 
-	88	{$Return="Must Fix, Kerberos Auth."}
-	389	{$Return="Must Fix, LDAP"}
-	636	{$Return="Must Fix, LDAPS"}
-	445	{$Return="Must Fix, DFSR, Group Policy, Login scripts."}
-	3268	{$Return="Must Fix, Global Catalog LDAP, UPN based login, Replication."}
-	3269	{$Return="Must Fix, Global Catalog LDAPs, Secure UPN based login,Replication"}
-	139	{$Return="Closed Ok, Legacy Linux access to DCs may be affected"}
-	464     {$Return="Must Fix, Kerberos based Password changes will be affected"}
-	5722    {$Return="Closed Ok, IF Target DC is WS 2008 R2 and below."}
-	9389    {$Return="Fix Recommended, PowerShell GET-AD* cmdlets will not work"}
-	5985    {$Return="Fix Recommended, PowerShell Remoting will not work"}
-	5986    {$Return="Closed Ok, PowerShell Remoting over SSL will not work IF it is configured."}
-	123	{$Return="Must Fix, NTP based Time sync will fail"}
-    53  {$Return="Must Fix, IF the DC is being used as DNS server or relay"}
-    135 {$Return="Must Fix, RPC Endpoint Mapper"}
+        88	{ $Return = "Must Fix, Kerberos Auth." }
+        389	{ $Return = "Must Fix, LDAP" }
+        636	{ $Return = "Must Fix, LDAPS" }
+        445	{ $Return = "Must Fix, DFSR, Group Policy, Login scripts." }
+        3268	{ $Return = "Must Fix, Global Catalog LDAP, UPN based login, Replication." }
+        3269	{ $Return = "Must Fix, Global Catalog LDAPs, Secure UPN based login,Replication" }
+        139	{ $Return = "Closed Ok, Legacy Linux access to DCs may be affected" }
+        464 { $Return = "Must Fix, Kerberos based Password changes will be affected" }
+        5722 { $Return = "Closed Ok, IF Target DC is WS 2008 R2 and below." }
+        9389 { $Return = "Fix Recommended, PowerShell GET-AD* cmdlets will not work" }
+        5985 { $Return = "Fix Recommended, PowerShell Remoting will not work" }
+        5986 { $Return = "Closed Ok, PowerShell Remoting over SSL will not work IF it is configured." }
+        123	{ $Return = "Must Fix, NTP based Time sync will fail" }
+        53 { $Return = "Must Fix, IF the DC is being used as DNS server or relay" }
+        135 { $Return = "Must Fix, RPC Endpoint Mapper" }
 
-	}
+    }
 
-$Return
+    $Return
 }
 
-$Results=@()
+$Results = @()
 Write-verbose "Version $version"
 
 
@@ -350,23 +361,23 @@ if ($Server) {
 
     $Server | foreach {
 
-        $name=$_
+        $name = $_
 
         try {
             #Write-verbose "Resolving $_ ..."
-            $Result= [System.Net.Dns]::GetHostByName($_).hostname
-            }
+            $Result = [System.Net.Dns]::GetHostByName($_).hostname
+        }
 
-      Catch {
+        Catch {
             Write-host "`n`n`nERROR: Could not resolve $name, check the name, or DNS Servers and try again" -ForegroundColor Red
             Write-Verbose "DNS Servers:"
             (Get-WmiObject Win32_NetworkAdapterConfiguration).DNSServerSearchOrder | Sort-Object -Unique
             break
 
-            }
+        }
 
     }
-    $ServerList=$Server
+    $ServerList = $Server
 
 
 
@@ -377,22 +388,22 @@ else {
 
     #First try to get obtain a list via Get-ADDomain
     Write-Verbose "Obtaining Domain Info ... "
-    $DomainInfo=get-addomain -Identity $Domain
+    $DomainInfo = get-addomain -Identity $Domain
 
-    $ForestInfo=get-adforest -Identity $DomainInfo.forest
-    $MySite=(nltest /dsgetsite)[0]
-    $ServerList=@()
+    $ForestInfo = get-adforest -Identity $DomainInfo.forest
+    $MySite = (nltest /dsgetsite)[0]
+    $ServerList = @()
 
-    $Serverlist+=new-object PSObject -Property (@{"Name"=$DomainInfo.PDCEmulator ;"Reason"="PDC"})
-    $Serverlist+=new-object PSObject -Property (@{"Name"=$DomainInfo.RidMaster ;"Reason"="RID Master"})
-    $Serverlist+=new-object PSObject -Property (@{"Name"=$DomainInfo.InfrastructureMaster ;"Reason"="Infra Master"})
-    $Serverlist+=new-object PSObject -Property (@{"Name"=$ForestInfo.DomainNamingMaster ;"Reason"="Domain Naming Master"})
-    $Serverlist+=new-object PSObject -Property (@{"Name"=$ForestInfo.SchemaMaster ;"Reason"="Schema Master"})
-    $ServerListtmp=$ServerList
-    $serverList=@()
+    $Serverlist += new-object PSObject -Property (@{"Name" = $DomainInfo.PDCEmulator ; "Reason" = "PDC" })
+    $Serverlist += new-object PSObject -Property (@{"Name" = $DomainInfo.RidMaster ; "Reason" = "RID Master" })
+    $Serverlist += new-object PSObject -Property (@{"Name" = $DomainInfo.InfrastructureMaster ; "Reason" = "Infra Master" })
+    $Serverlist += new-object PSObject -Property (@{"Name" = $ForestInfo.DomainNamingMaster ; "Reason" = "Domain Naming Master" })
+    $Serverlist += new-object PSObject -Property (@{"Name" = $ForestInfo.SchemaMaster ; "Reason" = "Schema Master" })
+    $ServerListtmp = $ServerList
+    $serverList = @()
     $ServerListTmp | Group-Object -Property Name | foreach {
-        $Serverlist+=new-object PSObject -Property (@{"Name"=$_.Name ;"Reason"=$_.Group.Reason -join ", "})
-        }
+        $Serverlist += new-object PSObject -Property (@{"Name" = $_.Name ; "Reason" = $_.Group.Reason -join ", " })
+    }
 
 
     If ($Minimum) {
@@ -400,21 +411,21 @@ else {
         Write-Verbose "Selecting FSMO DCs and Potential Replica Partners ... "
 
         #Get Site info
-        $SitesToResolve=@()
-        $sListTmp=@()
-        $PotentialPartners=@()
-        $ConfigPath=$ForestInfo.PartitionsContainer -replace "CN=Partitions,",""
-        [adsi]$SiteLinks="LDAP://CN=IP,CN=Inter-Site Transports,CN=Sites,$ConfigPath"
+        $SitesToResolve = @()
+        $sListTmp = @()
+        $PotentialPartners = @()
+        $ConfigPath = $ForestInfo.PartitionsContainer -replace "CN=Partitions,", ""
+        [adsi]$SiteLinks = "LDAP://CN=IP,CN=Inter-Site Transports,CN=Sites,$ConfigPath"
 
         #Go through each sitelink and where mysite is listed, record linked sites.
         $SiteLinks.children | foreach {
-            $sName=$_.Name
-            $sList=$_.SiteList
-            $sList | foreach { $sListTmp+=$(($_ -split "CN=")[1] -Replace ",","") }
+            $sName = $_.Name
+            $sList = $_.SiteList
+            $sList | foreach { $sListTmp += $(($_ -split "CN=")[1] -Replace ",", "") }
 
             if ($sListTmp -contains $MySite) {
 
-                $sList | foreach { $SitesToResolve+=$_ }
+                $sList | foreach { $SitesToResolve += $_ }
 
             }
 
@@ -423,27 +434,28 @@ else {
         #For each site in the list, get a list of DCs
         $SitesToResolve = $SitesToResolve | Sort-Object -Unique
         $SitesToResolve | foreach {
-            $SiteName=$(($_ -split "CN=")[1] -Replace ",","")
-            [adsi]$Site="LDAP://CN=Servers,$_"
+            $SiteName = $(($_ -split "CN=")[1] -Replace ",", "")
+            [adsi]$Site = "LDAP://CN=Servers,$_"
             ($Site.Children | Select dNSHostName).dNSHostName | foreach {
 
                 if ($ServerList.Name -notcontains $_) {
 
-                    $Serverlist+=new-object PSObject -Property (@{"Name"=$_ ;"Reason"="Potential Replica Partner [$SiteName]"})
+                    $Serverlist += new-object PSObject -Property (@{"Name" = $_ ; "Reason" = "Potential Replica Partner [$SiteName]" })
                 }
             }
         }
 
 
-    } else {
+    }
+    else {
 
         Write-Verbose "Selecting ALL $Domain DCs..."
         $DomainInfo.ReplicaDirectoryServers | foreach {
 
-              if ($ServerList.Name -notcontains $_) {
+            if ($ServerList.Name -notcontains $_) {
 
-                    $Serverlist+=new-object PSObject -Property (@{"Name"=$_ ;"Reason"="$Domain DC"})
-              }
+                $Serverlist += new-object PSObject -Property (@{"Name" = $_ ; "Reason" = "$Domain DC" })
+            }
 
         }
     }
@@ -464,79 +476,79 @@ else {
 }
 
 # Test Port connectivity and Latency
-$MyName=$([System.Net.Dns]::GetHostByName($env:computerName).Hostname)
+$MyName = $([System.Net.Dns]::GetHostByName($env:computerName).Hostname)
 Write-verbose "Source: $MyName"
 $ServerList | ForEach-Object {
 
-    $Server=$_.Name
+    $Server = $_.Name
 
     if ($Server -ne $MyName) {
 
-    Write-Verbose "   Testing $Server [$($_.Reason)]..."
+        Write-Verbose "   Testing $Server [$($_.Reason)]..."
 
 
-    #Test Latency
-    try {
-        $PingTest=Test-connection -ComputerName $Server -count 1 -ErrorAction SilentlyContinue
-    }
-    catch {
-        Write-Verbose "$Server ping failed"
-    }
+        #Test Latency
+        try {
+            $PingTest = Test-connection -ComputerName $Server -count 1 -ErrorAction SilentlyContinue
+        }
+        catch {
+            Write-Verbose "$Server ping failed"
+        }
 
-    if ($LatencyOnly) {
-        $Results += new-object PSObject -property (@{
- 
-              "Latency"           = $PingTest.responsetime
-              "ComputerName"      = $Server
-              "Type"              = "TCP"
-              "RemoteAddress"     = $PingTest.IPV4Address
-
-            }) #new-object
-    }
-
-    else {
-
-        #Test TCP ports
-
-        $ListOfTCPPorts | foreach {
-
-            $TCPResults=Test-port -computer $Server -port $_ -TCP
-
+        if ($LatencyOnly) {
             $Results += new-object PSObject -property (@{
  
-              "Passed"            = $TCPResults.Open
-              "ComputerName"      = $Server
-              "Port"              = $_
-              "Type"              = "TCP"
-              "RemoteAddress"     = $PingTest.IPV4Address
-              "Latency"           = $PingTest.responsetime
-	      "Notes"             = if ($($TCPResults.open) -eq $false) { PortNote -Port $_}
+                    "Latency"       = $PingTest.responsetime
+                    "ComputerName"  = $Server
+                    "Type"          = "TCP"
+                    "RemoteAddress" = $PingTest.IPV4Address
+
+                }) #new-object
+        }
+
+        else {
+
+            #Test TCP ports
+
+            $ListOfTCPPorts | foreach {
+
+                $TCPResults = Test-port -computer $Server -port $_ -TCP
+
+                $Results += new-object PSObject -property (@{
  
-            }) #new-object
-         }
-
-
-        #Test UDP ports
-        $ListOfUDPPorts | foreach {
-
-            $UDPResults=Test-port -computer $Server -port $_ -UDP
-
-            $Results += new-object PSObject -property (@{
+                        "Passed"        = $TCPResults.Open
+                        "ComputerName"  = $Server
+                        "Port"          = $_
+                        "Type"          = "TCP"
+                        "RemoteAddress" = $PingTest.IPV4Address
+                        "Latency"       = $PingTest.responsetime
+                        "Notes"         = if ($($TCPResults.open) -eq $false) { PortNote -Port $_ }
  
-              "Passed"            = $UDPResults.Open
-              "ComputerName"      = $Server
-              "Port"              = $_
-              "Type"              = "UDP"
-              "RemoteAddress"     = $PingTest.IPV4Address
-              "Latency"           = $PingTest.Responsetime
-	      "Notes"             = if ($($UDPResults.open) -eq $false) { PortNote -Port $_}
+                    }) #new-object
+            }
+
+
+            #Test UDP ports
+            $ListOfUDPPorts | foreach {
+
+                $UDPResults = Test-port -computer $Server -port $_ -UDP
+
+                $Results += new-object PSObject -property (@{
  
-            }) #new-object
-         }
+                        "Passed"        = $UDPResults.Open
+                        "ComputerName"  = $Server
+                        "Port"          = $_
+                        "Type"          = "UDP"
+                        "RemoteAddress" = $PingTest.IPV4Address
+                        "Latency"       = $PingTest.Responsetime
+                        "Notes"         = if ($($UDPResults.open) -eq $false) { PortNote -Port $_ }
+ 
+                    }) #new-object
+            }
 
 
 
-     } #LatencyOnly
+        } #LatencyOnly
 
     }
 
@@ -545,13 +557,10 @@ $ServerList | ForEach-Object {
 if ($latencyonly) {
     $results | Sort-Object -Property Latency | ft -autosize
     $results | Sort-Object -Property Latency | ft -autosize | out-file PortTest.txt
-     "Wrote PortTest.txt"
-} else {
-    $Results | Sort-Object -Property Passed -Descending | ft Passed,Type,Port,ComputerName,RemoteAddress,Latency,Notes -autosize
-    $Results | Sort-Object -Property Passed -Descending | ft Passed,Type,Port,ComputerName,RemoteAddress,Latency,Notes -autosize | out-file PortTest.txt
     "Wrote PortTest.txt"
 }
-
-
-
-
+else {
+    $Results | Sort-Object -Property Passed -Descending | ft Passed, Type, Port, ComputerName, RemoteAddress, Latency, Notes -autosize
+    $Results | Sort-Object -Property Passed -Descending | ft Passed, Type, Port, ComputerName, RemoteAddress, Latency, Notes -autosize | out-file PortTest.txt
+    "Wrote PortTest.txt"
+}
