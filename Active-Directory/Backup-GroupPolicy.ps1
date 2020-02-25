@@ -66,7 +66,7 @@ param (
     $Domain = $env:USERDNSDOMAIN,
 
     # Specify aliases for the Server parameter and support tab completion for domain controller names.
-    [Parameter(]
+    [Parameter()]
     [Alias("DomainController","DC")]
     [ArgumentCompleter( {
         param ( $commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters )
@@ -82,7 +82,7 @@ param (
 
         # Get a domain controller if none was specified with by server parameter
         If (-Not $Server) { $Server = (Get-ADDomainController).Hostname }
-        
+
         # Get current GPO information
         $GPOInfo = Get-GPO -All -Domain $domain -Server $Server
 
@@ -122,4 +122,4 @@ param (
 
     end {
     } #End of End block
-} #end of function 
+} #end of function
