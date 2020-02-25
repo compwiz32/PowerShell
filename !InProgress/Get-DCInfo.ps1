@@ -4,8 +4,9 @@ Param($computer)
 
 
 # Server FQDN
+$ComputerInfo = Get-CimInstance Win32_ComputerSystem |select *
 $FQDN=([System.Net.Dns]::GetHostByName(($computer))).Hostname
-
+$FQDN
 
 
 # Accounts in Local admins
@@ -18,6 +19,9 @@ $FQDN=([System.Net.Dns]::GetHostByName(($computer))).Hostname
 
 # PartOfDomain (boolean Property)
 $IsDc = (Get-WmiObject -ComputerName $computer -Class Win32_ComputerSystem).PartOfDomain
+
+$osInfo = Get-CimInstance -ClassName Win32_OperatingSystem
+$osInfo.ProductType
 
 # Roles Installed
 
