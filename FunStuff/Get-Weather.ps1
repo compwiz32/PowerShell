@@ -34,7 +34,7 @@ function Get-Weather {
         param (
             [string]$zip
         )
-        
+
         $apiCall = Invoke-RestMethod -Uri "https://nominatim.openstreetmap.org/search?format=jsonv2&namedetails=1&postalcode=$($zip)&countrycodes=US" | Select-Object -First 1
 
         return $apiCall
@@ -45,9 +45,9 @@ function Get-Weather {
         param(
             [string]$Latitude,
             [string]$Longitude
-        )
+       )
 
-        $apiCall = Invoke-RestMethod -Uri "http://api.weather.gov/points/$($Latitude),$($Longitude)"
+       $apiCall = Invoke-RestMethod -Uri "http://api.weather.gov/points/$($Latitude),$($Longitude)"
 
         return $apiCall
     }
@@ -116,15 +116,15 @@ function Get-Weather {
 
             <#
             Running a check for if the temperature property has a qc:Z value for quality control.
-            
-            Unfortunately the NWS API does not update current conditions as quickly as they should be and we have to run through each update period for a qc:V value. 
+
+            Unfortunately the NWS API does not update current conditions as quickly as they should be and we have to run through each update period for a qc:V value.
             If we don't do this, then most values will return null.
             The biggest issue we can get from this, is the fact that current conditions are far behind on time.
             Even if ignore the quality control values, the current conditions are unreliable and outdated.
             Hopefully NWS will fix this eventually.
             #>
             if (!($observation.properties.temperature.qualityControl -eq "qc:Z")) {
-    
+
                 $percentChange = New-Object System.Globalization.CultureInfo -ArgumentList "en-us", $false
                 $percentChange.NumberFormat.PercentDecimalDigits = 2
 
@@ -138,12 +138,12 @@ function Get-Weather {
                     return (($this.'Temperature (F)' - 32) * .5556)
                 }
                 Add-Member -InputObject $currentConditions -MemberType ScriptMethod -Name "ConvertDewPointToDouble" -Value {
-                    return [double]::Parse($this.'Dew Point'.TrimEnd("%")) 
+                    return [double]::Parse($this.'Dew Point'.TrimEnd("%"))
                 }
                 Add-Member -InputObject $currentConditions -MemberType ScriptMethod -Name "ConvertHumidityToDouble" -Value {
-                    return [double]::Parse($this.Humidity.TrimEnd("%")) 
+                    return [double]::Parse($this.Humidity.TrimEnd("%"))
                 }
-            
+
                 return $currentConditions
             }
         }
@@ -196,17 +196,17 @@ function Get-Weather {
     }
 
     <#
-    
-    Most of the script is split into multiple functions within this cmdlet. 
+
+    Most of the script is split into multiple functions within this cmdlet.
     It allows a modularized approach to running each command.
-    
+
     #>
     $osmData = osmLocation -zip $ZipCode #Get location data from the specified location.
 
     $nwsPoint = nwsPointData -Latitude $osmData.lat -Longitude $osmData.lon #Get the NWS point data from the Lat/Lon retrieved in the $osmData variable.
 
     <#
-    
+
     Even though we're grabbing one portion of the data from the user provided switch, we're grabbing all of the API urls returned in the point data.
     This doesn't extend the time it takes for the script to run.
     #>
@@ -217,7 +217,7 @@ function Get-Weather {
     Add-Member -InputObject $nwsAPIs -MemberType NoteProperty -Name "Local Office" -Value $nwsPoint.properties.forecastOffice
 
     <#
-    
+
     Running through the switches provided by the user.
     Only one switch can be ran at any given time.
     If more than one switch is provided, then it runs the first provided switch.
