@@ -114,7 +114,7 @@ Param(
                         $EventData.EventID = $_.id
                         $EventData.Message = $_.Message
                     
-                        $EventData | Select-Object Computer, Date, EventID, Action, Reason, User, Process, Comment
+                        $EventData | Select-Object Date, Computer, EventID, Action, User, Reason, Message
 
                     }
                 } #end Else
