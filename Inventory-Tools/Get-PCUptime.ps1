@@ -1,102 +1,109 @@
 function Get-PCUptime {
 
-<#
-.SYNOPSIS
-    Displays the current uptime and last boot time for one or more computers.
+    <#
+    .SYNOPSIS
+        Displays the current uptime and last boot time for one or more computers.
 
-.DESCRIPTION
-    Displays the current uptime and last boot time for one or more computers by querying CIM data. Remote computers
-    are queried via WINRM using CIMInstance.
+    .DESCRIPTION
+        Displays the current uptime and last boot time for one or more computers by querying CIM data. Remote computers
+        are queried via WINRM using CIMInstance.
 
-.PARAMETER ComputerName
+    .PARAMETER ComputerName
         Then name of a computer to query. Valid aliases are Name, Computer, & PC.
 
-.EXAMPLE
+    .PARAMETER Credential
+        Alternate credentials that can be used to run the function as another user.
 
-    Get-PCUptime
+    .EXAMPLE
 
-    Computer     : DC01
-    Days         : 40
-    Hours        : 20
-    Minutes      : 59
-    TotalHours   : 981
-    LastBootTime : 4/7/2020 10:38:44 AM
+        Get-PCUptime
 
-    Returns uptime stats for the local computer
+        Days         : 40
+        Hours        : 20
+        Minutes      : 59
+        TotalHours   : 981
+        LastBootTime : 4/7/2020 10:38:44 AM
 
-.EXAMPLE
+        Returns uptime stats for the local computer
 
-    Get-PCUpTime | Format-Table
+    .EXAMPLE
 
-    Computer       Days Hours Minutes TotalHours LastBootTime
-    --------       ---- ----- ------- ---------- ------------
-    DC01           40    21       2        981 4/7/2020 10:38:44 AM
+        Get-PCUpTime | Format-Table
 
-    Returns uptime stats for the local computer and display results in  table format
+        Days Hours Minutes TotalHours LastBootTime
+        ---- ----- ------- ---------- ------------
+        53      22      17       1294 4/7/2020 10:38:44 AM
 
-.EXAMPLE
+        Returns uptime stats for the local computer and display results in  table format
 
-    $dc = 'DC01','DC02','DC03'
+    .EXAMPLE
 
-    $dc | ForEach-Object {Get-PCUpTime $_ } | Format-Table -AutoSize
+        $dc = 'DC01','DC02','DC03'
 
-    Computer   Days Hours Minutes TotalHours LastBootTime
-    --------   ---- ----- ------- ---------- ------------
-    DC01       13    10      20        322 5/4/2020 9:27:23 PM
-    DC02        4    10      34        107 5/13/2020 9:13:11 PM
-    DC03       59    20       0       1436 3/19/2020 11:47:13 AM
+        Get-PCUptime $dc | Format-Table -AutoSize
 
-    Returns uptime stats for three remote computers.
+        Days Hours Minutes TotalHours LastBootTime          PSComputerName
+        ---- ----- ------- ---------- ------------          --------------
+        12      0      59        289  5/19/2020 7:16:18 AM  DC01
+        105     0      25       2520  2/16/2020 7:49:49 AM  DC02
+        205     9      57       4930  11/7/2019 10:17:50 PM DC03
 
-.INPUTS
-    Computername
-    Accepts input from pipeline
+        Returns uptime stats for three remote computers.
 
-.OUTPUTS
-    Output (if any)
+    .INPUTS
+        Computername
+        Accepts input from pipeline
 
-.NOTES
-   NAME:           Get-PCUptime.ps1
-   AUTHOR:         Mike Kanakos
-   DATE CREATED:   2020-05-18
-#>
+    .OUTPUTS
+        Output (if any)
+
+    .NOTES
+       NAME:           Get-PCUptime.ps1
+       AUTHOR:         Mike Kanakos
+       DATE CREATED:   2020-05-18
+    #>
 
 
-    [CmdletBinding()]
-    param (
-       [Alias("PC","Computer","ComputerName")]
-       [Parameter(ValueFromPipelineByPropertyName = $true)]
-       [string[]]$Name=$env:COMPUTERNAME
-    )
+        [CmdletBinding()]
+        param (
+           [Alias("PC","Computer","Name")]
+           [Parameter(
+                ValueFromPipeline,
+                ValueFromPipelineByPropertyName
+                )]
+           [string[]]
+           $ComputerName = $env:COMPUTERNAME,
 
-    process {
-        foreach ($PC in $Name) {
-            Write-Verbose "Testing that $PC is online"
-            $online = Test-Connection -ComputerName $PC -Count 1 -Quiet
-                if ($online -eq $true){
-                    $OSInfo = Get-CimInstance Win32_OperatingSystem -ComputerName $PC
-                    $LastBootTime = $OSInfo.LastBootUpTime
-                    $Uptime = (New-TimeSpan -start $lastBootTime -end (Get-Date))
+           [PSCredential]
+           $Credential
+        )
 
-                    $SelectProps = @{
-                            Name       = 'Computer'
-                            Expression = { $PC }
-                        },
-                        'Days',
-                        'Hours',
-                        'Minutes',
-                        @{
-                            Name       = 'TotalHours'
-                            Expression = { [math]::Round($Uptime.TotalHours) }
-                        },
-                        @{
-                            Name       = 'LastBootTime'
-                            Expression = { $LastBootTime }
-                        }
+        process {
+            $code = {
+                $OSInfo = Get-CimInstance Win32_OperatingSystem
+                $LastBootTime = $OSInfo.LastBootUpTime
+                $Uptime = (New-TimeSpan -start $lastBootTime -end (Get-Date))
 
-                    $Uptime | Select-Object $SelectProps
-                }
-        }
-    }
+                $SelectProps =
+                    'Days',
+                    'Hours',
+                    'Minutes',
+                    @{
+                        Name       = 'TotalHours'
+                        Expression = { [math]::Round($Uptime.TotalHours) }
+                    },
+                    @{
+                        Name       = 'LastBootTime'
+                        Expression = { $LastBootTime }
+                    }
 
-}
+                $Uptime | Select-Object $SelectProps
+            } #End $code
+
+            Invoke-Command -ScriptBlock $code @PSBoundParameters -ErrorAction SilentlyContinue -ErrorVariable NoConnect | Select-Object * -ExcludeProperty RunspaceID
+
+            foreach($fail in $NoConnect) {
+                Write-Warning "Failed to run on $($fail.TargetObject)"
+            } #end foreach warning loop
+        } #End Process
+    } #end function
