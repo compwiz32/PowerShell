@@ -23,6 +23,7 @@ function Get-PCUptime {
         Minutes      : 59
         TotalHours   : 981
         LastBootTime : 4/7/2020 10:38:44 AM
+        DayOfWeek    : Tuesday
 
         Returns uptime stats for the local computer
 
@@ -30,9 +31,9 @@ function Get-PCUptime {
 
         Get-PCUpTime | Format-Table
 
-        Days Hours Minutes TotalHours LastBootTime
-        ---- ----- ------- ---------- ------------
-        53      22      17       1294 4/7/2020 10:38:44 AM
+        Days Hours Minutes TotalHours LastBootTime          DayOfWeek
+        ---- ----- ------- ---------- ------------          ---------
+        53      22      17       1294 4/7/2020 10:38:44 AM    Tuesday
 
         Returns uptime stats for the local computer and display results in  table format
 
@@ -42,11 +43,11 @@ function Get-PCUptime {
 
         Get-PCUptime $dc | Format-Table -AutoSize
 
-        Days Hours Minutes TotalHours LastBootTime          PSComputerName
-        ---- ----- ------- ---------- ------------          --------------
-        12      0      59        289  5/19/2020 7:16:18 AM  DC01
-        105     0      25       2520  2/16/2020 7:49:49 AM  DC02
-        205     9      57       4930  11/7/2019 10:17:50 PM DC03
+        Days Hours Minutes TotalHours LastBootTime          DayOfWeek PSComputerName
+        ---- ----- ------- ---------- ------------          --------- --------------
+        12      0      59        289  5/19/2020 7:16:18 AM  Tuesday   DC01
+        105     0      25       2520  2/16/2020 7:49:49 AM  Sunday    DC02
+        205     9      57       4930  11/7/2019 10:17:50 PM Thursday  DC03
 
         Returns uptime stats for three remote computers.
 
@@ -95,7 +96,12 @@ function Get-PCUptime {
                     @{
                         Name       = 'LastBootTime'
                         Expression = { $LastBootTime }
+                    },
+                    @{
+                        Name       = 'DayOfWeek'
+                        Expression = { $LastBootTime.DayOfWeek }
                     }
+
 
                 $Uptime | Select-Object $SelectProps
             } #End $code
