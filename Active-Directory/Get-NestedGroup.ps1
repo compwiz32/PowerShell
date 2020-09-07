@@ -5,7 +5,8 @@ function Get-NestedGroup {
         Gets a list of nested groups inside an Active Directory group
 
     .DESCRIPTION
-        Gets a list of nested groups inside an Active Directory group using LDAPFilter
+        Gets a list of nested groups inside an Active Directory group using LDAPFilter. Checks for
+        two levels of nested groups from the parent group.
 
     .PARAMETER Group
         The name of an Active Directory group
@@ -68,7 +69,7 @@ function Get-NestedGroup {
 
     [CmdletBinding()]
     param (
-        [Parameter(ValueFromPipelineByPropertyName, Mandatory=$True)]
+        [Parameter(ValueFromPipelineByPropertyName, Mandatory = $True)]
         [String[]]$Group,
 
         [Parameter()]
@@ -77,31 +78,53 @@ function Get-NestedGroup {
 
     begin { }
 
-
     process {
         foreach ($item in $Group) {
             $ADGrp = Get-ADGroup -Identity $item -Server $Server
             $QueryResult = Get-ADGroup -LDAPFilter "(&(objectCategory=group)(memberof=$($ADGrp.DistinguishedName)))" -Properties canonicalname -Server $Server
-                if ( $null -ne $QueryResult) {
-                    foreach ($grp in $QueryResult) {
-                        $GrpLookup = Get-ADGroup -Identity "$($Grp.DistinguishedName)" -Properties Members, CanonicalName -Server $Server
+            if ( $null -ne $QueryResult) {
+                foreach ($grp in $QueryResult) {
+                    $GrpLookup = Get-ADGroup -Identity "$($Grp.DistinguishedName)" -Properties Members, CanonicalName -Server $Server
 
-                        $NestedGroupInfo = [PSCustomObject]@{
-                            'ParentGroup'               = $item
-                            'NestedGroup'               = $Grp.Name
-                            'NestedGroupMemberCount'    = $GrpLookup.Members.count
-                            'ObjectClass'               = $Grp.ObjectClass
-                            'ObjectPath'                = $GrpLookup.CanonicalName
-                            'DistinguishedName'         = $GrpLookup.DistinguishedName
-                        } #end PSCustomobject
+                    $NestedGroupInfo = [PSCustomObject]@{
+                        'ParentGroup'            = $item
+                        'NestedGroup'            = $Grp.Name
+                        'NestedGroupMemberCount' = $GrpLookup.Members.count
+                        'ObjectClass'            = $Grp.ObjectClass
+                        'ObjectPath'             = $GrpLookup.CanonicalName
+                        'DistinguishedName'      = $GrpLookup.DistinguishedName
+                    } #end PSCustomObject
 
-                        $NestedGroupInfo
+                    $NestedGroupInfo
+                } #end of foreach inside if statement
+            }
+            else {
+                Write-Information "There are no nested groups inside $item" -InformationAction Continue
+            } #end if/else
 
-                    } #end of foreach inside if statement
-                }else {
-                    Write-Information "There are no nested groups inside $item" -InformationAction Continue
-                } #end if/else
-            } #end parent foreach
+            # checking for groups of nested groups
+            foreach ($NestedGrp in $QueryResult) {
+                $NestedADGrp = Get-ADGroup -Identity $NestedGrp -Server $Server
+                $NestedQueryResult = Get-ADGroup -LDAPFilter "(&(objectCategory=group)(memberof=$($NestedADGrp.DistinguishedName)))" -Properties canonicalname -Server $Server
+
+                If ($null -ne $NestedQueryResult) {
+                    foreach ($SubGrp in $NestedQueryResult) {
+                        $SubGrpLookup = Get-ADGroup -Identity "$($SubGrp.DistinguishedName)" -Properties Members, CanonicalName -Server $Server
+                    }
+
+                    $SubNestedGroupInfo = [PSCustomObject]@{
+                        'ParentGroup'            = $NestedADGrp.Name
+                        'NestedGroup'            = $SubGrp.Name
+                        'NestedGroupMemberCount' = $SubGrpLookup.Members.count
+                        'ObjectClass'            = $SubGrp.ObjectClass
+                        'ObjectPath'             = $SubGrpLookup.CanonicalName
+                        'DistinguishedName'      = $SubGrpLookup.DistinguishedName
+                    } #end PSCustomObject
+
+                    $SubNestedGroupInfo
+                }
+            }
+        } #end parent foreach
     } #end process block
 
     end {}
