@@ -63,7 +63,7 @@ param (
 
     [Parameter()]
     [string]
-    $Domain = $env:USERDNSDOMAIN,
+    $Domain = (Get-ADDomainController).Domain,
 
     # Specify aliases for the Server parameter and support tab completion for domain controller names.
     [Parameter()]
