@@ -64,52 +64,72 @@ function Get-PCUptime {
        DATE CREATED:   2020-05-18
     #>
 
+    [CmdletBinding()]
+    param (
+        [Alias("PC", "Computer", "Name")]
+        [Parameter(
+            ValueFromPipeline,
+            ValueFromPipelineByPropertyName
+        )]
+        [string[]]
+        $ComputerName = $env:COMPUTERNAME,
 
-        [CmdletBinding()]
-        param (
-           [Alias("PC","Computer","Name")]
-           [Parameter(
-                ValueFromPipeline,
-                ValueFromPipelineByPropertyName
-                )]
-           [string[]]
-           $ComputerName = $env:COMPUTERNAME,
+        [PSCredential]
+        $Credential
+    )
 
-           [PSCredential]
-           $Credential
-        )
+    begin {
 
-        process {
-            $code = {
-                $OSInfo = Get-CimInstance Win32_OperatingSystem
-                $LastBootTime = $OSInfo.LastBootUpTime
-                $Uptime = (New-TimeSpan -start $lastBootTime -end (Get-Date))
+        $PcArray = [System.Collections.Generic.List[string]]::new()
 
-                $SelectProps =
-                    'Days',
-                    'Hours',
-                    'Minutes',
-                    @{
-                        Name       = 'TotalHours'
-                        Expression = { [math]::Round($Uptime.TotalHours) }
-                    },
-                    @{
-                        Name       = 'LastBootTime'
-                        Expression = { $LastBootTime }
-                    },
-                    @{
-                        Name       = 'DayOfWeek'
-                        Expression = { $LastBootTime.DayOfWeek }
-                    }
+        $code = {
+            $OSInfo = Get-CimInstance Win32_OperatingSystem
+            $LastBootTime = $OSInfo.LastBootUpTime
+            $Uptime = (New-TimeSpan -Start $lastBootTime -End (Get-Date))
+
+            $SelectProps =
+            'Days',
+            'Hours',
+            'Minutes',
+            @{
+                Name       = 'TotalHours'
+                Expression = { [math]::Round($Uptime.TotalHours) }
+            },
+            @{
+                Name       = 'LastBootTime'
+                Expression = { $LastBootTime }
+            },
+            @{
+                Name       = 'DayOfWeek'
+                Expression = { $LastBootTime.DayOfWeek }
+            }
 
 
-                $Uptime | Select-Object $SelectProps
-            } #End $code
+            $Uptime | Select-Object $SelectProps
+        } #End $code
+    }
 
-            Invoke-Command -ScriptBlock $code @PSBoundParameters -ErrorAction SilentlyContinue -ErrorVariable NoConnect | Select-Object * -ExcludeProperty RunspaceID
+    process {
+        foreach ($pc in $ComputerName) {
+            $PcArray.Add($pc)
+        }
+    } #End Process
 
-            foreach($fail in $NoConnect) {
-                Write-Warning "Failed to run on $($fail.TargetObject)"
-            } #end foreach warning loop
-        } #End Process
-    } #end function
+    end {
+
+        if ($Credential) {
+
+            Invoke-Command -ComputerName $PcArray -ScriptBlock $code -ErrorAction SilentlyContinue -ErrorVariable NoConnect -Credential $Credential |
+            Select-Object * -ExcludeProperty RunspaceID
+        }
+        else {
+            Invoke-Command -ComputerName $PcArray -ScriptBlock $code -ErrorAction SilentlyContinue -ErrorVariable NoConnect |
+            Select-Object * -ExcludeProperty RunspaceID
+
+        }
+
+        foreach ($fail in $NoConnect) {
+            Write-Warning "Failed to run on $($fail.TargetObject)"
+        } #end foreach warning loop
+    }
+} #end function
