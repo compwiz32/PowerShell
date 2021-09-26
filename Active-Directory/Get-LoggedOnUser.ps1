@@ -30,8 +30,6 @@ function Get-LoggedOnUser {
     LogonTime    : 3/28/2019 10:53 AM
     Error        :
 
-
-
 .EXAMPLE
     Get-LoggedOnUser -ComputerName server01,server02
 
@@ -64,7 +62,6 @@ function Get-LoggedOnUser {
     IdleTime     : 8
     LogonTime    : 3/29/2019 10:22 AM
     Error        :
-
 
 .EXAMPLE
     Get-LoggedOnUser -computername server01, server02 | format-table
