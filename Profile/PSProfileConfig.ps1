@@ -29,11 +29,12 @@ function prompt {
     Write-Host ""
     Write-host ($(if ($IsAdmin) { 'Elevated ' } else { '' })) -BackgroundColor DarkRed -ForegroundColor White -NoNewline
     Write-Host " USER:$($CmdPromptUser.Name.split("\")[1]) " -BackgroundColor DarkBlue -ForegroundColor White -NoNewline
-    Write-Host ".\$CmdPromptCurrentFolder\ "  -ForegroundColor White -BackgroundColor DarkGray -NoNewline
+    If ($CmdPromptCurrentFolder -like "*:*")
+        {Write-Host " $CmdPromptCurrentFolder "  -ForegroundColor White -BackgroundColor DarkGray -NoNewline}
+        else {Write-Host ".\$CmdPromptCurrentFolder\ "  -ForegroundColor White -BackgroundColor DarkGray -NoNewline}
+
     Write-Host " $date " -ForegroundColor White
-    Write-Host "[" -NoNewline -ForegroundColor Green
-    Write-Host $ElapsedTime -ForegroundColor Green -NoNewline
-    Write-host "] " -NoNewline -ForegroundColor Green
+    Write-Host "[$elapsedTime] " -NoNewline -ForegroundColor Green
     return "> "
 } #end prompt function
 
@@ -81,6 +82,6 @@ $OutputDir = "C:\Scripts\Output"
 
 $GitIAMDir = "C:\GitRepos\foundational-and-identity"
 $OneDriveDir = "C:\Users\mkanakos\OneDrive - Align Technology, Inc"
-$DownloadsDir = "C:\Users\mkanakos\Downloads"
+$DownloadsDir = "C:\Users\mkana\Downloads"
 $DesktopDir = "C:\Users\mkanakos\Desktop"
 $ReportsDir = "C:\Users\mkanakos\OneDrive - Align Technology, Inc\Reports"
