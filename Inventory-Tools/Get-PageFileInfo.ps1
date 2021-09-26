@@ -1,5 +1,5 @@
 Function Get-PageFileInfo {
-<#
+  <#
   .Synopsis
     Returns info about the page file size of a Windows computer. Defaults to local machine.
 
@@ -20,7 +20,7 @@ Function Get-PageFileInfo {
     CurrentUsage (in MB) : 60
     PeakUsage (in MB)    : 203
     TempPageFileInUse    : False
-
++
 
   .Example
     Get-PageFileInfo SRV01, SRV02
@@ -70,42 +70,41 @@ Function Get-PageFileInfo {
 
 #>
 
-[CmdletBinding()]
+  [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$True,ValueFromPipeline=$True)]
-      [string[]]$ComputerName
+    [Parameter(Mandatory = $True, ValueFromPipeline = $True)]
+    [string[]]$ComputerName
   )
 
-# Main Part of function
+  # Main Part of function
 
-Foreach ($computer in $ComputerName){
+  Foreach ($computer in $ComputerName) {
 
-$online= Test-Connection -ComputerName $computer -Count 2 -Quiet
+    $online = Test-Connection -ComputerName $computer -Count 2 -Quiet
 
-if ($online -eq $true){
-  $PageFileResults = Get-CimInstance -Class Win32_PageFileUsage -ComputerName $Computer | Select-Object *
-  $CompSysResults = Get-CimInstance win32_computersystem -ComputerName $Computer -Namespace 'root\cimv2'
+    if ($online -eq $true) {
+      $PageFileResults = Get-CimInstance -Class Win32_PageFileUsage -ComputerName $Computer | Select-Object *
+      $CompSysResults = Get-CimInstance win32_computersystem -ComputerName $Computer -Namespace 'root\cimv2'
 
-  $PageFileStats = [PSCustomObject]@{
-    Computer = $computer
-    FilePath = $PageFileResults.Description
-    AutoManagedPageFile = $CompSysResults.AutomaticManagedPagefile
-    "TotalSize(in MB)" = $PageFileResults.AllocatedBaseSize
-    "CurrentUsage(in MB)"  = $PageFileResults.CurrentUsage
-    "PeakUsage(in MB)" = $PageFileResults.PeakUsage
-    TempPageFileInUse = $PageFileResults.TempPageFile
-    } #END PSCUSTOMOBJECT
+      $PageFileStats = [PSCustomObject]@{
+        Computer              = $computer
+        FilePath              = $PageFileResults.Description
+        AutoManagedPageFile   = $CompSysResults.AutomaticManagedPagefile
+        "TotalSize(in MB)"    = $PageFileResults.AllocatedBaseSize
+        "CurrentUsage(in MB)" = $PageFileResults.CurrentUsage
+        "PeakUsage(in MB)"    = $PageFileResults.PeakUsage
+        TempPageFileInUse     = $PageFileResults.TempPageFile
+      } #END PSCUSTOMOBJECT
 
-  } #END IF
+    } #END IF
 
-else{
-  # Computer is not reachable!
-  Write-Host "Error: $computer not online" -Foreground white -BackgroundColor Red
-  } # END ELSE
+    else {
+      # Computer is not reachable!
+      Write-Host "Error: $computer not online" -Foreground white -BackgroundColor Red
+    } # END ELSE
 
-$PageFileStats
+    $PageFileStats
 
   } #END FOREACH
-
 
 } #END FUNCTION
