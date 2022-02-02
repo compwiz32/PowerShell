@@ -91,7 +91,7 @@ param (
         $Date = Get-Date -UFormat "%Y-%m-%d"
         $UpdatedPath = "$path\$date"
 
-        If (-Not $UpdatedPath) { New-item $UpdatedPath -ItemType directory | Out-Null }
+        If (-not $(Test-Path $UpdatedPath)) { New-item $UpdatedPath -ItemType directory | Out-Null }
 
         Write-Host "GPOs will be backed up to $UpdatedPath" -backgroundcolor white -foregroundColor red
     } #end of begin block
