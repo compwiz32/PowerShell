@@ -72,8 +72,8 @@ Function Get-PageFileInfo {
 
   [CmdletBinding()]
   Param(
-    [Parameter(Mandatory = $True, ValueFromPipeline = $True)]
-    [string[]]$ComputerName
+    [Parameter(ValueFromPipeline = $True)]
+    [string[]]$ComputerName = $env:Computername
   )
 
   # Main Part of function
