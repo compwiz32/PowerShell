@@ -43,6 +43,3 @@ $LastCommand = Get-History -Count 1
     }
 
 
-
-
-

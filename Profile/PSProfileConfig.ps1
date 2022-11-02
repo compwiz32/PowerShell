@@ -73,6 +73,16 @@ function Invoke-7Admin {
     }
 }
 
+
+#PSReadline settings
+Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+Set-PSReadLineOption -PredictionViewStyle ListView
+Set-PSReadLineOption -PredictionSource History
+Set-PSReadLineOption -Colors @{emphasis = '#ff0000'; inlinePrediction = 'Yellow'}
+Set-PSReadLineOption -HistoryNoDuplicates
+Set-PSReadLineKeyHandler -Key Tab -Function Complete
+
 #Fav Variables & Shortcuts
 
 $exclude = "runspaceid", "pscomputername"
