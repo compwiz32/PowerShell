@@ -1,3 +1,5 @@
+Import-Module GroupPolicy
+
 function Backup-GroupPolicy {
 <#
     .SYNOPSIS
@@ -47,7 +49,7 @@ function Backup-GroupPolicy {
     .NOTES
     Name       : Backup-GroupPolicy.ps1
     Author     : Mike Kanakos
-    Version    : 1.1.0
+    Version    : 1.2.0
     DateCreated: 2018-12-19
     DateUpdated: 2019-01-25
 
@@ -89,9 +91,9 @@ param (
 
         #Create a date-based folder to save backup of group policies
         $Date = Get-Date -UFormat "%Y-%m-%d"
-        $UpdatedPath = "$path\$date"
-
-        If (-Not $UpdatedPath) { New-item $UpdatedPath -ItemType directory | Out-Null }
+        $UpdatedPath = "$Path\$Date"
+        
+        If (-Not (Test-Path $UpdatedPath)) { New-item $UpdatedPath -ItemType directory | Out-Null }
 
         Write-Host "GPOs will be backed up to $UpdatedPath" -backgroundcolor white -foregroundColor red
     } #end of begin block
@@ -104,7 +106,7 @@ param (
             Write-Host $GPO.Displayname -foregroundColor White
 
             #Assign temp variables for various parts of GPO data
-            $BackupInfo = Backup-GPO -Name $GPO.DisplayName -Domain $Domain -path $UpdatedPath -Server $Server
+            $BackupInfo = Backup-GPO -Name $($GPO.DisplayName) -Domain $Domain -path $UpdatedPath -Server $Server
             $GpoBackupID = $BackupInfo.ID.Guid
             $GpoGuid = $BackupInfo.GPOID.Guid
             $GpoName = $BackupInfo.DisplayName
