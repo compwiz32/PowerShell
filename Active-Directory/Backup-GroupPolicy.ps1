@@ -109,7 +109,7 @@ param (
             $BackupInfo = Backup-GPO -Name $($GPO.DisplayName) -Domain $Domain -path $UpdatedPath -Server $Server
             $GpoBackupID = $BackupInfo.ID.Guid
             $GpoGuid = $BackupInfo.GPOID.Guid
-            $GpoName = $BackupInfo.DisplayName
+            $GpoName = $BackupInfo.DisplayName -replace '[\/\\]', '_'
             $CurrentFolderName = $UpdatedPath + "\" + "{"+ $GpoBackupID + "}"
             $NewFolderName = $UpdatedPath + "\" + $GPOName + "___" + "{"+ $GpoBackupID + "}"
             $ConsoleOutput = $GPOName + "___" + "{"+ $GpoBackupID + "}"
