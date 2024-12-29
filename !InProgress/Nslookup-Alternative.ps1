@@ -1,0 +1,2 @@
+nslookup commandline.ninja
+
